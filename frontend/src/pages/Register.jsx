@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-// SVG Icons (no emojis - UI/UX Pro Max rule)
 const HospitalIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -78,7 +77,7 @@ function Register() {
     setError('')
     if (!validateForm()) return
 
-    // Disable button during submission (UI/UX Pro Max - loading-buttons rule)
+   
     setLoading(true)
     setTimeout(() => {
       console.log(formData)
@@ -86,7 +85,6 @@ function Register() {
     }, 1500)
   }
 
-  // Reusable classes
   const inputClass = `
     w-full bg-[#111111] border border-[#2a2a2a] rounded-lg px-4 py-3
     text-white placeholder-[#444] text-sm outline-none
@@ -98,10 +96,8 @@ function Register() {
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
 
-      {/* ── LEFT PANEL ── */}
       <div className="hidden lg:flex flex-1 flex-col justify-between px-14 py-12 bg-[#0a0a0a] border-r border-[#1a1a1a]">
 
-        {/* Logo */}
         <div className="flex items-center gap-3">
           <HospitalIcon />
           <span className="text-white font-bold text-xl tracking-tight">
@@ -110,7 +106,6 @@ function Register() {
           </span>
         </div>
 
-        {/* Main content */}
         <div>
           <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 mb-8">
             <ShieldIcon />
@@ -130,7 +125,6 @@ function Register() {
             and care history — all in one place.
           </p>
 
-          {/* Stats row */}
           <div className="flex gap-8 mt-12">
             {[
               { value: '10k+', label: 'Patients' },
@@ -145,7 +139,6 @@ function Register() {
           </div>
         </div>
 
-        {/* Trust badges */}
         <div className="flex items-center gap-6">
           {['HIPAA Compliant', 'ISO 27001', '256-bit Encrypted'].map((badge) => (
             <div key={badge} className="flex items-center gap-2">
@@ -157,10 +150,8 @@ function Register() {
 
       </div>
 
-      {/* ── RIGHT PANEL - FORM ── */}
       <div className="w-full lg:w-[540px] flex flex-col justify-center px-8 lg:px-12 py-12 bg-[#0d0d0d]">
 
-        {/* Mobile logo */}
         <div className="flex items-center gap-2 mb-8 lg:hidden">
           <HospitalIcon />
           <span className="text-white font-bold text-lg">
@@ -185,7 +176,6 @@ function Register() {
 
         <form onSubmit={handleSubmit} noValidate>
 
-          {/* Row 1 - Name & Email */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
               <label htmlFor="fullName" className={labelClass}>Full Name</label>
@@ -215,7 +205,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Row 2 - Passwords */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
               <label htmlFor="password" className={labelClass}>Password</label>
@@ -245,7 +234,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Row 3 - Phone & DOB */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
               <label htmlFor="phone" className={labelClass}>Phone Number</label>
@@ -273,7 +261,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Row 4 - Blood Group & Role */}
           <div className="grid grid-cols-2 gap-3 mb-5">
             <div>
               <label htmlFor="bloodGroup" className={labelClass}>Blood Group</label>
@@ -306,7 +293,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Error — shown near form, not just at top (UI/UX Pro Max rule) */}
           {error && (
             <div
               role="alert"
@@ -321,7 +307,6 @@ function Register() {
             </div>
           )}
 
-          {/* Submit — disabled during loading (UI/UX Pro Max rule) */}
           <button
             type="submit"
             disabled={loading}
@@ -350,7 +335,6 @@ function Register() {
 
         </form>
 
-        {/* Trust line at bottom */}
         <div className="flex items-center justify-center gap-2 mt-6">
           <StarIcon />
           <p className="text-[#444] text-xs">
