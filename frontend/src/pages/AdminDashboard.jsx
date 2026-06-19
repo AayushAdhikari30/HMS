@@ -1,16 +1,14 @@
-
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import DashboardLayout from "../components/DashboardLayout/DashboardLayout";
-import MetricCard from "../components/MetricCard/MetricCard";
-import styles from "./AdminDashboard.module.css";
+import DashboardLayout from "../components/DashboardLayout";
+import MetricCard from "../components/MetricCard";
 
 const NAV_ITEMS = [
-  { to: "/admin", icon: "⊞", label: "Overview" },
-  { to: "/admin/users", icon: "👥", label: "User Management" },
-  { to: "/admin/rooms", icon: "🏥", label: "Room Management" },
-  { to: "/admin/billing", icon: "💳", label: "Billing" },
-  { to: "/admin/reports", icon: "📊", label: "Reports" },
+  { to: "/admin-dashboard", icon: "", label: "Overview" },
+  { to: "/admin-dashboard/users", icon: "", label: "User Management" },
+  { to: "/admin-dashboard/rooms", icon: "", label: "Room Management" },
+  { to: "/admin-dashboard/billing", icon: "", label: "Billing" },
+  { to: "/admin-dashboard/reports", icon: "", label: "Reports" },
 ];
 
 const STATS = [
@@ -30,36 +28,53 @@ const MOCK_USERS = [
 
 const ROLE_FILTERS = ["All", "doctor", "patient", "admin"];
 
+const ROLE_PILL_STYLES = {
+  doctor: "bg-blue-500/10 text-blue-400",
+  patient: "bg-green-500/10 text-green-500",
+  admin: "bg-purple-500/10 text-purple-400",
+};
+
+const Placeholder = ({ label }) => (
+  <div className="bg-[#111111] border border-dashed border-[#2a2a2a] rounded-xl py-16 px-8 text-center text-sm text-[#555]">
+    {label} · Coming Soon
+  </div>
+);
+
 // --- Sub-component: UserRow ---
 const UserRow = ({ user, onToggle, onDelete }) => (
-  <tr className={styles.tableRow}>
-    <td className={styles.td}>
-      <span className={styles.userId}>{user.id}</span>
+  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
+    <td className="px-5 py-3.5 text-sm align-middle">
+      <span className="font-mono text-xs text-[#666]">{user.id}</span>
     </td>
-    <td className={styles.td}>
-      <span className={styles.userName}>{user.name}</span>
+    <td className="px-5 py-3.5 text-sm align-middle">
+      <span className="font-medium text-[#ddd]">{user.name}</span>
     </td>
-    <td className={styles.td}>
-      <span className={`${styles.rolePill} ${styles[`role__${user.role}`]}`}>
+    <td className="px-5 py-3.5 text-sm align-middle">
+      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold tracking-wide capitalize ${ROLE_PILL_STYLES[user.role]}`}>
         {user.role}
       </span>
     </td>
-    <td className={styles.td}>{user.department}</td>
-    <td className={styles.td}>
-      <span
-        className={`${styles.statusDot} ${
-          user.status === "Active" ? styles.statusActive : styles.statusInactive
-        }`}
-      >
-        {user.status}
+    <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{user.department}</td>
+    <td className="px-5 py-3.5 text-sm align-middle">
+      <span className="flex items-center gap-1.5 text-sm font-semibold">
+        <span
+          className={`w-1.5 h-1.5 rounded-full ${user.status === "Active" ? "bg-green-500" : "bg-amber-400"}`}
+        />
+        <span className={user.status === "Active" ? "text-green-500" : "text-amber-400"}>{user.status}</span>
       </span>
     </td>
-    <td className={styles.td}>
-      <div className={styles.rowActions}>
-        <button className={styles.actionBtnEdit} onClick={() => onToggle(user)}>
+    <td className="px-5 py-3.5 align-middle">
+      <div className="flex gap-2">
+        <button
+          onClick={() => onToggle(user)}
+          className="border border-green-500/40 text-green-500 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-green-500 hover:text-black transition-colors duration-150 cursor-pointer whitespace-nowrap"
+        >
           Toggle Status
         </button>
-        <button className={styles.actionBtnDelete} onClick={() => onDelete(user.id)}>
+        <button
+          onClick={() => onDelete(user.id)}
+          className="border border-red-500/40 text-red-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-red-500 hover:text-white transition-colors duration-150 cursor-pointer"
+        >
           Remove
         </button>
       </div>
@@ -69,23 +84,22 @@ const UserRow = ({ user, onToggle, onDelete }) => (
 
 // --- Sub-component: UserManagementConsole ---
 const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilterChange }) => {
-  const filtered =
-    activeFilter === "All"
-      ? users
-      : users.filter((u) => u.role === activeFilter);
+  const filtered = activeFilter === "All" ? users : users.filter((u) => u.role === activeFilter);
 
   return (
-    <section className={styles.consoleSection}>
-      <div className={styles.consoleHeader}>
-        <h2 className={styles.sectionTitle}>User Management Console</h2>
-        <div className={styles.filterGroup}>
+    <section className="flex flex-col gap-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-base font-semibold text-white tracking-tight">User Management Console</h2>
+        <div className="flex gap-2">
           {ROLE_FILTERS.map((f) => (
             <button
               key={f}
-              className={`${styles.filterBtn} ${
-                activeFilter === f ? styles.filterBtnActive : ""
-              }`}
               onClick={() => onFilterChange(f)}
+              className={`px-3.5 py-1.5 rounded-full border text-xs font-medium transition-colors duration-150 cursor-pointer ${
+                activeFilter === f
+                  ? "bg-green-500 border-green-500 text-black"
+                  : "border-[#2a2a2a] text-[#888] hover:border-green-500/40 hover:text-green-500"
+              }`}
             >
               {f === "All" ? "All" : f.charAt(0).toUpperCase() + f.slice(1) + "s"}
             </button>
@@ -93,23 +107,23 @@ const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilt
         </div>
       </div>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
+      <div className="bg-[#111111] border border-[#1a1a1a] rounded-xl overflow-hidden">
+        <table className="w-full border-collapse">
           <thead>
             <tr>
               {["ID", "Name", "Role", "Department", "Status", "Actions"].map((h) => (
-                <th key={h} className={styles.th}>{h}</th>
+                <th
+                  key={h}
+                  className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
+                >
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filtered.map((user) => (
-              <UserRow
-                key={user.id}
-                user={user}
-                onToggle={onToggle}
-                onDelete={onDelete}
-              />
+              <UserRow key={user.id} user={user} onToggle={onToggle} onDelete={onDelete} />
             ))}
           </tbody>
         </table>
@@ -125,21 +139,16 @@ const AdminOverview = () => {
 
   const handleToggle = (target) =>
     setUsers((prev) =>
-      prev.map((u) =>
-        u.id === target.id
-          ? { ...u, status: u.status === "Active" ? "On Leave" : "Active" }
-          : u
-      )
+      prev.map((u) => (u.id === target.id ? { ...u, status: u.status === "Active" ? "On Leave" : "Active" } : u))
     );
 
-  const handleDelete = (id) =>
-    setUsers((prev) => prev.filter((u) => u.id !== id));
+  const handleDelete = (id) => setUsers((prev) => prev.filter((u) => u.id !== id));
 
   return (
-    <div className={styles.overviewGrid}>
-      <section className={styles.statsSection}>
-        <h2 className={styles.sectionTitle}>Hospital Statistics</h2>
-        <div className={styles.statsGrid}>
+    <div className="flex flex-col gap-8">
+      <section className="flex flex-col gap-4">
+        <h2 className="text-base font-semibold text-white tracking-tight">Hospital Statistics</h2>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
           {STATS.map((s) => (
             <MetricCard key={s.label} {...s} />
           ))}
@@ -163,10 +172,10 @@ export default function AdminDashboard() {
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Admin Console">
       <Routes>
         <Route index element={<AdminOverview />} />
-        <Route path="users" element={<div className={styles.placeholder}>User Management · Coming Soon</div>} />
-        <Route path="rooms" element={<div className={styles.placeholder}>Room Management · Coming Soon</div>} />
-        <Route path="billing" element={<div className={styles.placeholder}>Billing · Coming Soon</div>} />
-        <Route path="reports" element={<div className={styles.placeholder}>Reports · Coming Soon</div>} />
+        <Route path="users" element={<Placeholder label="User Management" />} />
+        <Route path="rooms" element={<Placeholder label="Room Management" />} />
+        <Route path="billing" element={<Placeholder label="Billing" />} />
+        <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>
     </DashboardLayout>
   );

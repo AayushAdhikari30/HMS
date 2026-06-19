@@ -1,37 +1,29 @@
-import  { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 axios.defaults.withCredentials = true;
 const BACKEND = import.meta.env.VITE_BACKEND || "http://localhost:8000";
 
+const HospitalIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    <polyline points="9 22 9 12 15 12 15 22" />
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+);
+
 const ROLE_CONFIG = {
-  patient: {
-    label: "Patient",
-    gradient: "from-blue-600 to-indigo-600",
-    hover:    "hover:from-blue-700 hover:to-indigo-700",
-    ring:     "focus:ring-blue-500",
-    badge:    "bg-blue-50 text-blue-700",
-    placeholder: "patient@hospital.com",
-  },
-  doctor: {
-    label: "Doctor",
-    gradient: "from-teal-600 to-cyan-600",
-    hover:    "hover:from-teal-700 hover:to-cyan-700",
-    ring:     "focus:ring-teal-500",
-    badge:    "bg-teal-50 text-teal-700",
-    placeholder: "doctor@hospital.com",
-  },
-  admin: {
-    label: "Admin",
-    gradient: "from-purple-600 to-pink-600",
-    hover:    "hover:from-purple-700 hover:to-pink-700",
-    ring:     "focus:ring-purple-500",
-    badge:    "bg-purple-50 text-purple-700",
-    placeholder: "admin@hospital.com",
-  },
+  patient: { label: "Patient", placeholder: "patient@hospital.com" },
+  doctor: { label: "Doctor", placeholder: "doctor@hospital.com" },
+  admin: { label: "Admin", placeholder: "admin@hospital.com" },
 };
 
 const Login = () => {
@@ -47,14 +39,18 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const cfg = ROLE_CONFIG[role];
 
-  // Auto-login check
   useEffect(() => {
     const stored = localStorage.getItem("hms_user");
     if (stored) {
       try {
         const u = JSON.parse(stored);
-        if (u?.role) { navigate(`/${u.role}-dashboard`); return; }
-      } catch { localStorage.removeItem("hms_user"); }
+        if (u?.role) {
+          navigate(`/${u.role}-dashboard`);
+          return;
+        }
+      } catch {
+        localStorage.removeItem("hms_user");
+      }
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCheckingAuth(false);
@@ -81,154 +77,209 @@ const Login = () => {
     }
   };
 
+  const inputClass = `
+    w-full bg-[#111111] border border-[#2a2a2a] rounded-lg px-4 py-3
+    text-white placeholder-[#444] text-sm outline-none
+    focus:border-green-500 focus:ring-1 focus:ring-green-500/20
+    transition-all duration-200 [color-scheme:dark]
+  `;
+  const labelClass = "block text-[#888] text-xs font-semibold uppercase tracking-widest mb-2";
+
   if (checkingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50">
-        <div className="w-8 h-8 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+        <div className="w-8 h-8 border-4 border-[#2a2a2a] border-t-green-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-teal-50 to-cyan-50 px-4 py-12 font-display relative overflow-hidden">
-      {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-teal-200/30 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-10 left-0 h-64 w-64 rounded-full bg-cyan-200/30 blur-3xl" />
-
-      <div className="w-full max-w-md">
-        {/* Card */}
-        <div className="bg-white/85 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/60">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${cfg.gradient} rounded-2xl mb-4 shadow-xl`}>
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 8v4l3 2" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900">MediCare HMS</h1>
-            <p className="text-gray-400 text-sm mt-1">Sign in to your portal</p>
-          </div>
-
-          {/* Role toggle */}
-          <div className="flex gap-1.5 mb-6 p-1 bg-gray-100 rounded-xl">
-            {Object.entries(ROLE_CONFIG).map(([key, c]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => { setRole(key); setError(""); }}
-                className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all duration-200 ${
-                  role === key
-                    ? `bg-white text-gray-900 shadow-sm`
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                {cfg.label} Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={cfg.placeholder}
-                required
-                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${cfg.ring} focus:border-transparent transition-all text-sm`}
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
-                  className={`w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${cfg.ring} focus:border-transparent transition-all text-sm`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((p) => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
-                <svg className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <p className="text-red-700 text-sm">{error}</p>
-              </div>
-            )}
-
-            {/* Forgot password */}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => navigate("/forgot-password")}
-                className="text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors"
-              >
-                Forgot password?
-              </button>
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-3.5 bg-gradient-to-r ${cfg.gradient} ${cfg.hover} text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 text-sm`}
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Signing in…
-                </>
-              ) : (
-                `Sign in as ${cfg.label}`
-              )}
-            </button>
-          </form>
-
-          {/* Register link (patients only) */}
-          {role === "patient" && (
-            <p className="text-center text-sm text-gray-500 mt-6">
-              New patient?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/register")}
-                className="font-semibold text-teal-600 hover:text-teal-700 hover:underline transition-colors"
-              >
-                Create account
-              </button>
-            </p>
-          )}
+    <div className="min-h-screen flex bg-[#0a0a0a]">
+      {/* Left panel — mirrors Register.jsx */}
+      <div className="hidden lg:flex flex-1 flex-col justify-between px-14 py-12 bg-[#0a0a0a] border-r border-[#1a1a1a]">
+        <div className="flex items-center gap-3">
+          <HospitalIcon />
+          <span className="text-white font-bold text-xl tracking-tight">
+            Medi<span className="text-green-500">Care</span>
+            <span className="text-[#555] font-normal ml-1 text-sm">HMS</span>
+          </span>
         </div>
 
-        {/* Trust badges */}
-        <div className="flex items-center justify-center gap-6 mt-6 text-xs text-gray-400">
+        <div>
+          <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 mb-8">
+            <ShieldIcon />
+            <span className="text-green-400 text-xs font-semibold tracking-wide uppercase">
+              Trusted Healthcare Platform
+            </span>
+          </div>
+
+          <h1 className="text-5xl font-bold text-white leading-tight mb-6 tracking-tight">
+            Welcome back<br />
+            to <span className="text-green-500">MediCare</span>.
+          </h1>
+
+          <p className="text-[#666] text-base leading-relaxed max-w-sm">
+            Sign in to access patient records, appointments, and care
+            history — all in one secure place.
+          </p>
+
+          <div className="flex gap-8 mt-12">
+            {[
+              { value: "10k+", label: "Patients" },
+              { value: "500+", label: "Doctors" },
+              { value: "98%", label: "Satisfaction" },
+            ].map((stat) => (
+              <div key={stat.label} className="border-l-2 border-green-500/40 pl-4">
+                <p className="text-green-500 text-2xl font-bold">{stat.value}</p>
+                <p className="text-[#555] text-xs uppercase tracking-wider mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6">
+          {["HIPAA Compliant", "ISO 27001", "256-bit Encrypted"].map((badge) => (
+            <div key={badge} className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              <span className="text-[#555] text-xs">{badge}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="w-full lg:w-[460px] flex flex-col justify-center px-8 lg:px-12 py-12 bg-[#0d0d0d]">
+        <div className="flex items-center gap-2 mb-8 lg:hidden">
+          <HospitalIcon />
+          <span className="text-white font-bold text-lg">
+            Medi<span className="text-green-500">Care</span> HMS
+          </span>
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-white text-2xl font-bold tracking-tight mb-1">Sign in to your portal</h2>
+          <p className="text-[#555] text-sm">
+            New patient?{" "}
+            <Link to="/register" className="text-green-500 hover:text-green-400 font-medium transition-colors duration-150">
+              Create an account
+            </Link>
+          </p>
+        </div>
+
+        {/* Role toggle */}
+        <div className="flex gap-1.5 mb-6 p-1 bg-[#111111] border border-[#2a2a2a] rounded-xl">
+          {Object.entries(ROLE_CONFIG).map(([key, c]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => {
+                setRole(key);
+                setError("");
+              }}
+              className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all duration-200 cursor-pointer ${
+                role === key ? "bg-green-500 text-black" : "text-[#888] hover:text-white"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <div>
+            <label htmlFor="email" className={labelClass}>
+              {cfg.label} Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={cfg.placeholder}
+              required
+              autoComplete="email"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className={labelClass}>
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                autoComplete="current-password"
+                className={`${inputClass} pr-12`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((p) => !p)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555] hover:text-[#888] transition-colors cursor-pointer"
+              >
+                {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div role="alert" className="flex items-center gap-3 bg-red-500/8 border border-red-500/20 rounded-lg px-4 py-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-xs font-medium text-[#666] hover:text-[#aaa] transition-colors cursor-pointer"
+            >
+              Forgot password?
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            aria-label={`Sign in as ${cfg.label}`}
+            className="
+              w-full py-3.5 rounded-lg font-semibold text-sm
+              bg-green-500/10 text-green-500 border border-green-500/40
+              hover:bg-green-500 hover:text-black hover:border-green-500
+              disabled:opacity-50 disabled:cursor-not-allowed
+              transition-all duration-200 cursor-pointer
+              focus:outline-none focus:ring-2 focus:ring-green-500/50
+              flex items-center justify-center gap-2
+            "
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                Signing in…
+              </>
+            ) : (
+              `Sign in as ${cfg.label} →`
+            )}
+          </button>
+        </form>
+
+        <div className="flex items-center justify-center gap-6 mt-8 text-xs text-[#444]">
           {["HIPAA Compliant", "256-bit Encrypted", "Trusted Platform"].map((b) => (
-            <div key={b} className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+            <div key={b} className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
               {b}
             </div>
           ))}
