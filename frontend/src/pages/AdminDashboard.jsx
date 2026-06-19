@@ -1,9 +1,8 @@
-// --- Pages/admin/AdminDashboard.jsx ---
 
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import DashboardLayout from "../../components/DashboardLayout/DashboardLayout";
-import MetricCard from "../../components/MetricCard/MetricCard";
+import DashboardLayout from "../components/DashboardLayout/DashboardLayout";
+import MetricCard from "../components/MetricCard/MetricCard";
 import styles from "./AdminDashboard.module.css";
 
 const NAV_ITEMS = [

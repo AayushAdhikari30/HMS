@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import DashboardLayout from "../../components/DashboardLayout/DashboardLayout";
-import MetricCard from "../../components/MetricCard/MetricCard";
-import DataTable from "../../components/DataTable/DataTable";
+import DashboardLayout from "../components/DashboardLayout/DashboardLayout";
+import MetricCard from "../components/MetricCard/MetricCard";
+import DataTable from "../components/DataTable/DataTable";
 import styles from "./PatientDashboard.module.css";
 
 const NAV_ITEMS = [

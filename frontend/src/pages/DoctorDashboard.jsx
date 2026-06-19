@@ -1,8 +1,8 @@
 // --- Pages/doctor/DoctorDashboard.jsx ---
 
 import { Routes, Route } from "react-router-dom";
-import DashboardLayout from "../../components/DashboardLayout/DashboardLayout";
-import DataTable from "../../components/DataTable/DataTable";
+import DashboardLayout from "../components/DashboardLayout/DashboardLayout";
+import DataTable from "../components/DataTable/DataTable";
 import styles from "./DoctorDashboard.module.css";
 
 const NAV_ITEMS = [
