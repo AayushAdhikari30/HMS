@@ -41,3 +41,12 @@ export const HTTP = {
 };
 
 export const BCRYPT_SALT_ROUNDS = 12;
+
+export const APPOINTMENT_STATUS = {
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  CANCELLED: "cancelled",
+  COMPLETED: "completed",
+};
+
+export const APPOINTMENT_STATUS_LIST = Object.values(APPOINTMENT_STATUS);
