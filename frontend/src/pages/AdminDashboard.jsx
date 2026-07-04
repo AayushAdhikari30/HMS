@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import MetricCard from "../components/MetricCard";
+import AddStaffForm from "../components/AddStaffForm";
+import api from "../api/axios";
 
 const NAV_ITEMS = [
   { to: "/admin-dashboard", icon: "", label: "Overview" },
@@ -18,20 +20,23 @@ const STATS = [
   { label: "Pending Admissions", value: "7", sub: "Awaiting assignment" },
 ];
 
+
 const MOCK_USERS = [
-  { id: "U001", name: "Dr. Ramesh Karki", role: "doctor", department: "Cardiology", status: "Active" },
-  { id: "U002", name: "Sanjay Gurung", role: "patient", department: "—", status: "Active" },
-  { id: "U003", name: "Dr. Sita Thapa", role: "doctor", department: "Neurology", status: "On Leave" },
-  { id: "U004", name: "Anita Sharma", role: "patient", department: "—", status: "Active" },
-  { id: "U005", name: "Dr. Bikash Rai", role: "doctor", department: "Orthopedics", status: "Active" },
+  { id: "u1", identifier: "DOC-2026-0001", name: "DOC-2026-0001", role: "doctor", department: "—", status: "Active", is_active: true },
+  { id: "u2", identifier: "sanjay.gurung@example.com", name: "Sanjay Gurung", role: "patient", department: "—", status: "Active", is_active: true },
+  { id: "u3", identifier: "DOC-2026-0002", name: "DOC-2026-0002", role: "doctor", department: "—", status: "On Leave", is_active: false },
+  { id: "u4", identifier: "anita.sharma@example.com", name: "Anita Sharma", role: "patient", department: "—", status: "Active", is_active: true },
+  { id: "u5", identifier: "ADM-2026-0001", name: "ADM-2026-0001", role: "admin", department: "—", status: "Active", is_active: true },
 ];
 
-const ROLE_FILTERS = ["All", "doctor", "patient", "admin"];
+const ROLE_FILTERS = ["All", "doctor", "patient", "admin", "pharmacist", "lab_assistant"];
 
 const ROLE_PILL_STYLES = {
   doctor: "bg-blue-500/10 text-blue-400",
   patient: "bg-green-500/10 text-green-500",
   admin: "bg-purple-500/10 text-purple-400",
+  pharmacist: "bg-amber-500/10 text-amber-400",
+  lab_assistant: "bg-cyan-500/10 text-cyan-400",
 };
 
 const Placeholder = ({ label }) => (
@@ -44,23 +49,21 @@ const Placeholder = ({ label }) => (
 const UserRow = ({ user, onToggle, onDelete }) => (
   <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
     <td className="px-5 py-3.5 text-sm align-middle">
-      <span className="font-mono text-xs text-[#666]">{user.id}</span>
+      <span className="font-mono text-xs text-[#666]">{user.identifier}</span>
     </td>
     <td className="px-5 py-3.5 text-sm align-middle">
       <span className="font-medium text-[#ddd]">{user.name}</span>
     </td>
     <td className="px-5 py-3.5 text-sm align-middle">
-      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold tracking-wide capitalize ${ROLE_PILL_STYLES[user.role]}`}>
+      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold tracking-wide capitalize ${ROLE_PILL_STYLES[user.role] ?? "bg-white/5 text-[#888]"}`}>
         {user.role}
       </span>
     </td>
     <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{user.department}</td>
     <td className="px-5 py-3.5 text-sm align-middle">
       <span className="flex items-center gap-1.5 text-sm font-semibold">
-        <span
-          className={`w-1.5 h-1.5 rounded-full ${user.status === "Active" ? "bg-green-500" : "bg-amber-400"}`}
-        />
-        <span className={user.status === "Active" ? "text-green-500" : "text-amber-400"}>{user.status}</span>
+        <span className={`w-1.5 h-1.5 rounded-full ${user.is_active ? "bg-green-500" : "bg-amber-400"}`} />
+        <span className={user.is_active ? "text-green-500" : "text-amber-400"}>{user.status}</span>
       </span>
     </td>
     <td className="px-5 py-3.5 align-middle">
@@ -82,15 +85,14 @@ const UserRow = ({ user, onToggle, onDelete }) => (
   </tr>
 );
 
-// --- Sub-component: UserManagementConsole ---
-const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilterChange }) => {
+const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilterChange, loading }) => {
   const filtered = activeFilter === "All" ? users : users.filter((u) => u.role === activeFilter);
 
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 className="text-base font-semibold text-white tracking-tight">User Management Console</h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {ROLE_FILTERS.map((f) => (
             <button
               key={f}
@@ -101,7 +103,7 @@ const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilt
                   : "border-[#2a2a2a] text-[#888] hover:border-green-500/40 hover:text-green-500"
               }`}
             >
-              {f === "All" ? "All" : f.charAt(0).toUpperCase() + f.slice(1) + "s"}
+              {f === "All" ? "All" : f.replace("_", " ").replace(/^\w/, (c) => c.toUpperCase()) + "s"}
             </button>
           ))}
         </div>
@@ -111,7 +113,7 @@ const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilt
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              {["ID", "Name", "Role", "Department", "Status", "Actions"].map((h) => (
+              {["Identifier", "Name", "Role", "Department", "Status", "Actions"].map((h) => (
                 <th
                   key={h}
                   className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
@@ -122,9 +124,24 @@ const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilt
             </tr>
           </thead>
           <tbody>
-            {filtered.map((user) => (
-              <UserRow key={user.id} user={user} onToggle={onToggle} onDelete={onDelete} />
-            ))}
+            {loading && (
+              <tr>
+                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">
+                  Loading users…
+                </td>
+              </tr>
+            )}
+            {!loading && filtered.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">
+                  No users match this filter.
+                </td>
+              </tr>
+            )}
+            {!loading &&
+              filtered.map((user) => (
+                <UserRow key={user.id} user={user} onToggle={onToggle} onDelete={onDelete} />
+              ))}
           </tbody>
         </table>
       </div>
@@ -132,17 +149,53 @@ const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilt
   );
 };
 
-// --- Sub-view: AdminOverview ---
 const AdminOverview = () => {
   const [users, setUsers] = useState(MOCK_USERS);
   const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
 
-  const handleToggle = (target) =>
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await api.get("/users");
+        if (!cancelled && res.data?.success) {
+          setUsers(res.data.users);
+        }
+      } catch (err) {
+        console.warn("[AdminOverview] Falling back to mock data:", err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleToggle = async (target) => {
     setUsers((prev) =>
-      prev.map((u) => (u.id === target.id ? { ...u, status: u.status === "Active" ? "On Leave" : "Active" } : u))
+      prev.map((u) =>
+        u.id === target.id
+          ? { ...u, is_active: !u.is_active, status: !u.is_active ? "Active" : "On Leave" }
+          : u,
+      ),
     );
+    try {
+      await api.patch(`/users/${target.id}/toggle-status`);
+    } catch (err) {
+      console.error("[AdminOverview] toggle-status failed:", err.message);
+    }
+  };
 
-  const handleDelete = (id) => setUsers((prev) => prev.filter((u) => u.id !== id));
+  const handleDelete = async (id) => {
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+    try {
+      await api.delete(`/users/${id}`);
+    } catch (err) {
+      console.error("[AdminOverview] delete failed:", err.message);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -161,6 +214,70 @@ const AdminOverview = () => {
         onDelete={handleDelete}
         activeFilter={filter}
         onFilterChange={setFilter}
+        loading={loading}
+      />
+    </div>
+  );
+};
+
+
+const UserManagementPage = () => {
+  const [users, setUsers] = useState([]);
+  const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/users");
+      if (res.data?.success) setUsers(res.data.users);
+    } catch (err) {
+      console.warn("[UserManagementPage] fetch failed:", err.message);
+      setUsers(MOCK_USERS);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleToggle = async (target) => {
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === target.id
+          ? { ...u, is_active: !u.is_active, status: !u.is_active ? "Active" : "On Leave" }
+          : u,
+      ),
+    );
+    try {
+      await api.patch(`/users/${target.id}/toggle-status`);
+    } catch (err) {
+      console.error("[UserManagementPage] toggle-status failed:", err.message);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+    try {
+      await api.delete(`/users/${id}`);
+    } catch (err) {
+      console.error("[UserManagementPage] delete failed:", err.message);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-8">
+      <AddStaffForm onCreated={fetchUsers} />
+
+      <UserManagementConsole
+        users={users}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
+        activeFilter={filter}
+        onFilterChange={setFilter}
+        loading={loading}
       />
     </div>
   );
@@ -172,7 +289,7 @@ export default function AdminDashboard() {
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Admin Console">
       <Routes>
         <Route index element={<AdminOverview />} />
-        <Route path="users" element={<Placeholder label="User Management" />} />
+        <Route path="users" element={<UserManagementPage />} />
         <Route path="rooms" element={<Placeholder label="Room Management" />} />
         <Route path="billing" element={<Placeholder label="Billing" />} />
         <Route path="reports" element={<Placeholder label="Reports" />} />

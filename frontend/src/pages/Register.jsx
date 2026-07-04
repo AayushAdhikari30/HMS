@@ -1,41 +1,34 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import api from '../api/axios'
 
 const HospitalIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-    <polyline points="9 22 9 12 15 12 15 22"/>
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    <polyline points="9 22 9 12 15 12 15 22" />
   </svg>
 )
 
 const ShieldIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-  </svg>
-)
-
-const UsersIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-    <circle cx="9" cy="7" r="4"/>
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
   </svg>
 )
 
 const StarIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" strokeWidth="2">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 )
 
-function Register() {
+export default function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'Patient',
     phone: '',
     dob: '',
     bloodGroup: ''
@@ -77,12 +70,27 @@ function Register() {
     setError('')
     if (!validateForm()) return
 
-   
-    setLoading(true)
-    setTimeout(() => {
-      console.log(formData)
+    try {
+      setLoading(true)
+      const res = await api.post("/register", {
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        dob: formData.dob,
+        bloodGroup: formData.bloodGroup,
+      });
+
+      if (res.data.success) {
+        navigate("/login");
+      } else {
+        setError(res.data.message || 'Registration failed')
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Something went wrong. Please try again.')
+    } finally {
       setLoading(false)
-    }, 1500)
+    }
   }
 
   const inputClass = `
@@ -150,7 +158,7 @@ function Register() {
 
       </div>
 
-      <div className="w-full lg:w-[540px] flex flex-col justify-center px-8 lg:px-12 py-12 bg-[#0d0d0d]">
+      <div className="w-full lg:w-135 flex flex-col justify-center px-8 lg:px-12 py-12 bg-[#0d0d0d]">
 
         <div className="flex items-center gap-2 mb-8 lg:hidden">
           <HospitalIcon />
@@ -261,36 +269,20 @@ function Register() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            <div>
-              <label htmlFor="bloodGroup" className={labelClass}>Blood Group</label>
-              <select
-                id="bloodGroup"
-                name="bloodGroup"
-                value={formData.bloodGroup}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="">Select</option>
-                {['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(bg => (
-                  <option key={bg} value={bg}>{bg}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="role" className={labelClass}>Role</label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="Patient">Patient</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Admin">Admin</option>
-              </select>
-            </div>
+          <div className="mb-5">
+            <label htmlFor="bloodGroup" className={labelClass}>Blood Group</label>
+            <select
+              id="bloodGroup"
+              name="bloodGroup"
+              value={formData.bloodGroup}
+              onChange={handleChange}
+              className={inputClass}
+            >
+              <option value="">Select</option>
+              {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
+                <option key={bg} value={bg}>{bg}</option>
+              ))}
+            </select>
           </div>
 
           {error && (
@@ -299,9 +291,9 @@ function Register() {
               className="flex items-center gap-3 bg-red-500/8 border border-red-500/20 rounded-lg px-4 py-3 mb-4"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               <p className="text-red-400 text-sm">{error}</p>
             </div>
@@ -324,7 +316,7 @@ function Register() {
             {loading ? (
               <>
                 <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                 </svg>
                 Creating account...
               </>
@@ -346,5 +338,3 @@ function Register() {
     </div>
   )
 }
-
-export default Register

@@ -1,5 +1,3 @@
-
-
 import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import DataTable from "../components/DataTable";
@@ -39,7 +37,6 @@ const Placeholder = ({ label }) => (
   </div>
 );
 
-// --- Sub-component: QuickActionPanel ---
 const QuickActionPanel = ({ actions }) => (
   <div className="flex flex-col gap-4">
     <h2 className="text-base font-semibold text-white tracking-tight">Quick Actions</h2>
@@ -58,7 +55,6 @@ const QuickActionPanel = ({ actions }) => (
   </div>
 );
 
-// --- Sub-view: DoctorOverview ---
 const DoctorOverview = () => (
   <div className="flex flex-col gap-8">
     <section className="flex flex-col">
@@ -75,7 +71,6 @@ const DoctorOverview = () => (
   </div>
 );
 
-// --- DoctorDashboard Router ---
 export default function DoctorDashboard() {
   return (
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Doctor Dashboard">

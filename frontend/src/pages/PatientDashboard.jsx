@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
@@ -6,10 +5,10 @@ import MetricCard from "../components/MetricCard";
 import DataTable from "../components/DataTable";
 
 const NAV_ITEMS = [
-  { to: "/patient-dashboard",  label: "Overview" },
-  { to: "/patient-dashboard/appointments",   label: "Appointments" },
-  { to: "/patient-dashboard/prescriptions",   label: "Prescriptions" },
-  { to: "/patient-dashboard/reports",  label: "Reports" },
+  { to: "/patient-dashboard", label: "Overview" },
+  { to: "/patient-dashboard/appointments", label: "Appointments" },
+  { to: "/patient-dashboard/prescriptions", label: "Prescriptions" },
+  { to: "/patient-dashboard/reports", label: "Reports" },
 ];
 
 const METRICS = [
@@ -37,7 +36,6 @@ const Placeholder = ({ label }) => (
     {label} · Coming Soon
   </div>
 );
-
 
 const PatientOverview = () => {
   const [selectedCheckup, setSelectedCheckup] = useState(null);

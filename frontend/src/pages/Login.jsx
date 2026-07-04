@@ -1,11 +1,8 @@
 import { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-
-axios.defaults.withCredentials = true;
-const BACKEND = import.meta.env.VITE_BACKEND || "http://localhost:8000";
+import api from "../api/axios";
 
 const HospitalIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -20,15 +17,18 @@ const ShieldIcon = () => (
   </svg>
 );
 
+// FIX: staff log in with admin-generated IDs (e.g. DOC-2026-0001), not email.
+// The input must accept that, so type="email" can no longer be used and the
+// placeholder/label must reflect each role's actual identifier format.
 const ROLE_CONFIG = {
-  patient: { label: "Patient", placeholder: "patient@hospital.com" },
-  doctor: { label: "Doctor", placeholder: "doctor@hospital.com" },
-  admin: { label: "Admin", placeholder: "admin@hospital.com" },
+  patient: { label: "Patient", placeholder: "you@example.com", fieldLabel: "Email" },
+  doctor: { label: "Doctor", placeholder: "DOC-2026-0001", fieldLabel: "Staff ID" },
+  admin: { label: "Admin", placeholder: "ADM-2026-0001", fieldLabel: "Staff ID" },
 };
 
 const Login = () => {
   const [role, setRole] = useState("patient");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -61,12 +61,10 @@ const Login = () => {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post(
-        `${BACKEND}/api/v1/hms/login`,
-        { email, password, role },
-        { withCredentials: true }
-      );
+    
+      const res = await api.post("/login", { identifier, password, role });
       if (res.data.success) {
+        localStorage.setItem("hms_token", res.data.accessToken);
         login(res.data.user);
         navigate(`/${role}-dashboard`);
       }
@@ -95,7 +93,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
-      {/* Left panel — mirrors Register.jsx */}
       <div className="hidden lg:flex flex-1 flex-col justify-between px-14 py-12 bg-[#0a0a0a] border-r border-[#1a1a1a]">
         <div className="flex items-center gap-3">
           <HospitalIcon />
@@ -148,7 +145,7 @@ const Login = () => {
       </div>
 
       {/* Right panel — form */}
-      <div className="w-full lg:w-[460px] flex flex-col justify-center px-8 lg:px-12 py-12 bg-[#0d0d0d]">
+      <div className="w-full lg:w-115 flex flex-col justify-center px-8 lg:px-12 py-12 bg-[#0d0d0d]">
         <div className="flex items-center gap-2 mb-8 lg:hidden">
           <HospitalIcon />
           <span className="text-white font-bold text-lg">
@@ -166,7 +163,6 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Role toggle */}
         <div className="flex gap-1.5 mb-6 p-1 bg-[#111111] border border-[#2a2a2a] rounded-xl">
           {Object.entries(ROLE_CONFIG).map(([key, c]) => (
             <button
@@ -187,17 +183,17 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
-            <label htmlFor="email" className={labelClass}>
-              {cfg.label} Email
+            <label htmlFor="identifier" className={labelClass}>
+              {cfg.label} {cfg.fieldLabel}
             </label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="identifier"
+              type="text"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               placeholder={cfg.placeholder}
               required
-              autoComplete="email"
+              autoComplete="username"
               className={inputClass}
             />
           </div>

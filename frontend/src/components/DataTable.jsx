@@ -1,5 +1,3 @@
-
-
 const STATUS_STYLES = {
   completed: "bg-green-500/10 text-green-500",
   pending: "bg-amber-500/10 text-amber-400",

@@ -1,5 +1,3 @@
-
-
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,6 +5,8 @@ const ROLE_LABELS = {
   patient: "Patient Portal",
   doctor: "Doctor Portal",
   admin: "Admin Console",
+  pharmacist: "Pharmacist Portal",
+  lab_assistant: "Lab Portal",
 };
 
 const HospitalIcon = () => (
@@ -16,7 +16,6 @@ const HospitalIcon = () => (
   </svg>
 );
 
-// --- Sub-component: SidebarNavItem ---
 const SidebarNavItem = ({ to, icon, label }) => (
   <NavLink
     to={to}
@@ -34,7 +33,6 @@ const SidebarNavItem = ({ to, icon, label }) => (
   </NavLink>
 );
 
-// --- Sub-component: TopNavbar ---
 const TopNavbar = ({ user, onLogout, pageTitle }) => (
   <header className="flex items-center justify-between px-8 h-16 bg-[#0d0d0d] border-b border-[#1a1a1a] sticky top-0 z-10">
     <h1 className="text-base font-semibold text-white tracking-tight">{pageTitle}</h1>
@@ -58,7 +56,6 @@ const TopNavbar = ({ user, onLogout, pageTitle }) => (
   </header>
 );
 
-// --- Sub-component: Sidebar ---
 const Sidebar = ({ navItems, role }) => (
   <aside className="w-60 flex-shrink-0 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col py-6 sticky top-0 h-screen overflow-y-auto">
     <div className="flex items-center gap-2 px-6 pb-1">
@@ -78,12 +75,11 @@ const Sidebar = ({ navItems, role }) => (
   </aside>
 );
 
-// --- Main: DashboardLayout ---
 const DashboardLayout = ({ navItems, pageTitle, children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     logout();
     navigate("/login");
   };

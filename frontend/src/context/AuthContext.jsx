@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("hms_user");
     localStorage.removeItem("hms_role");
+    localStorage.removeItem("hms_token");
     setUser(null);
   };
 
