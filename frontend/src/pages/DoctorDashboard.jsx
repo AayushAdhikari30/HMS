@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import DataTable from "../components/DataTable";
 import DoctorAppointments from "./DoctorAppointments";
+import DoctorSchedule from "./DoctorSchedule";
 
 const NAV_ITEMS = [
   { to: "/doctor-dashboard", icon: "", label: "Overview" },
@@ -90,7 +91,7 @@ export default function DoctorDashboard() {
         <Route index element={<DoctorOverview />} />
         <Route path="appointments" element={<DoctorAppointments />} />
         <Route path="patients" element={<Placeholder label="My Patients" />} />
-        <Route path="schedule" element={<Placeholder label="Schedule" />} />
+        <Route path="schedule" element={<DoctorSchedule />} />
       </Routes>
     </DashboardLayout>
   );
