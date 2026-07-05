@@ -24,6 +24,11 @@ const formatDate = (iso) => {
   });
 };
 
+const formatDateTime = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+};
+
 const StatusPill = ({ status }) => (
   <span
     className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide capitalize ${
@@ -178,7 +183,65 @@ const PrescribeEditor = ({ onSave, onDismiss, saving }) => {
   );
 };
 
-const PatientRow = ({ patient, expanded, prescribed, busy, onToggle, onSave }) => (
+// --- Read-only view of this doctor's past prescriptions for one patient ---
+const MedicationMiniTable = ({ medications }) => (
+  <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-lg overflow-hidden mt-2">
+    <table className="w-full border-collapse">
+      <thead>
+        <tr>
+          {["Medicine", "Dosage", "Frequency", "Duration", "Instructions"].map((h) => (
+            <th
+              key={h}
+              className="text-left text-[10px] font-bold uppercase tracking-widest text-[#666] px-3 py-2 bg-white/[0.02] border-b border-[#1a1a1a]"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {medications.map((med, idx) => (
+          <tr key={idx} className="border-b border-[#1a1a1a] last:border-none">
+            <td className="px-3 py-2 text-sm font-medium text-[#ddd] align-middle">{med.name}</td>
+            <td className="px-3 py-2 text-sm text-[#999] align-middle">{med.dosage || "—"}</td>
+            <td className="px-3 py-2 text-sm text-[#999] align-middle">{med.frequency || "—"}</td>
+            <td className="px-3 py-2 text-sm text-[#999] align-middle">{med.duration || "—"}</td>
+            <td className="px-3 py-2 text-sm text-[#999] align-middle">{med.instructions || "—"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+const PrescriptionHistory = ({ prescriptions }) => (
+  <div className="bg-white/[0.02] border-t border-[#1a1a1a] px-6 py-5">
+    <div className="flex flex-col gap-4 max-w-3xl">
+      <h4 className="text-sm font-semibold text-white">Prescription History</h4>
+      {prescriptions.length === 0 ? (
+        <p className="text-sm text-[#666]">No prescriptions written for this patient yet.</p>
+      ) : (
+        prescriptions.map((rx) => (
+          <div key={rx.id} className="bg-[#111111] border border-[#1a1a1a] rounded-lg p-4">
+            <div className="flex items-start justify-between flex-wrap gap-2">
+              <h5 className="text-sm font-semibold text-white">{rx.diagnosis || "General prescription"}</h5>
+              <span className="text-xs text-[#555]">{formatDateTime(rx.createdAt)}</span>
+            </div>
+            <MedicationMiniTable medications={rx.medications ?? []} />
+            {rx.notes && (
+              <p className="text-sm text-[#999] mt-2">
+                <span className="text-[#666] font-semibold">Notes: </span>
+                {rx.notes}
+              </p>
+            )}
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+);
+
+const PatientRow = ({ patient, mode, busy, onSetMode, onSave, prescriptions }) => (
   <>
     <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
       <td className="px-5 py-3.5 text-sm align-middle">
@@ -189,25 +252,36 @@ const PatientRow = ({ patient, expanded, prescribed, busy, onToggle, onSave }) =
       <td className="px-5 py-3.5 text-sm align-middle">
         <StatusPill status={patient.lastVisitStatus} />
       </td>
-      <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{patient.visitCount}</td>
+      <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{patient.rxCount}</td>
       <td className="px-5 py-3.5 align-middle">
-        {prescribed ? (
-          <span className="text-xs text-green-500 font-semibold px-2.5 py-1">✓ Prescribed</span>
-        ) : (
+        <div className="flex gap-2 flex-wrap">
           <button
-            onClick={onToggle}
+            onClick={() => onSetMode(mode === "view" ? null : "view")}
+            className="border border-[#2a2a2a] text-[#ccc] rounded-md px-2.5 py-1 text-xs font-semibold hover:border-green-500/40 hover:text-green-500 transition-colors duration-150 cursor-pointer"
+          >
+            {mode === "view" ? "Close" : `View (${patient.rxCount})`}
+          </button>
+          <button
+            onClick={() => onSetMode(mode === "prescribe" ? null : "prescribe")}
             disabled={busy}
             className="border border-purple-500/40 text-purple-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-purple-500 hover:text-black transition-colors duration-150 cursor-pointer disabled:opacity-50"
           >
-            {expanded ? "Close" : "Prescribe"}
+            {mode === "prescribe" ? "Close" : "Prescribe"}
           </button>
-        )}
+        </div>
       </td>
     </tr>
-    {expanded && (
+    {mode === "view" && (
       <tr>
         <td colSpan={6} className="p-0">
-          <PrescribeEditor saving={busy} onDismiss={onToggle} onSave={onSave} />
+          <PrescriptionHistory prescriptions={prescriptions} />
+        </td>
+      </tr>
+    )}
+    {mode === "prescribe" && (
+      <tr>
+        <td colSpan={6} className="p-0">
+          <PrescribeEditor saving={busy} onDismiss={() => onSetMode(null)} onSave={onSave} />
         </td>
       </tr>
     )}
@@ -216,16 +290,17 @@ const PatientRow = ({ patient, expanded, prescribed, busy, onToggle, onSave }) =
 
 const DoctorPatients = () => {
   const [appointments, setAppointments] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState(null);
+  const [expanded, setExpanded] = useState({ patientId: null, mode: null });
   const [busyId, setBusyId] = useState(null);
-  const [prescribed, setPrescribed] = useState({});
 
-  const fetchAppointments = useCallback(async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get("/appointments");
-      if (res.data?.success) setAppointments(res.data.appointments);
+      const [apptRes, rxRes] = await Promise.all([api.get("/appointments"), api.get("/prescriptions")]);
+      if (apptRes.data?.success) setAppointments(apptRes.data.appointments);
+      if (rxRes.data?.success) setPrescriptions(rxRes.data.prescriptions);
     } catch (err) {
       console.warn("[DoctorPatients] fetch failed:", err.message);
     } finally {
@@ -234,8 +309,20 @@ const DoctorPatients = () => {
   }, []);
 
   useEffect(() => {
-    fetchAppointments();
-  }, [fetchAppointments]);
+    fetchAll();
+  }, [fetchAll]);
+
+  // Group this doctor's prescriptions by patient
+  const rxByPatient = useMemo(() => {
+    const map = new Map();
+    for (const rx of prescriptions) {
+      if (!rx.patient?.id) continue;
+      const list = map.get(rx.patient.id) ?? [];
+      list.push(rx);
+      map.set(rx.patient.id, list);
+    }
+    return map;
+  }, [prescriptions]);
 
   // Derive a distinct patient list from this doctor's appointment history
   const patients = useMemo(() => {
@@ -258,15 +345,17 @@ const DoctorPatients = () => {
         existing.visitCount += 1;
       }
     }
-    return Array.from(byId.values()).sort((a, b) => (a.name > b.name ? 1 : -1));
-  }, [appointments]);
+    return Array.from(byId.values())
+      .map((p) => ({ ...p, rxCount: rxByPatient.get(p.id)?.length ?? 0 }))
+      .sort((a, b) => (a.name > b.name ? 1 : -1));
+  }, [appointments, rxByPatient]);
 
   const submitPrescription = async (patient, { diagnosis, medications, notes }) => {
     setBusyId(patient.id);
     try {
       await api.post("/prescriptions", { patientId: patient.id, diagnosis, medications, notes });
-      setPrescribed((prev) => ({ ...prev, [patient.id]: true }));
-      setExpandedId(null);
+      await fetchAll();
+      setExpanded({ patientId: null, mode: null });
     } catch (err) {
       console.error("[DoctorPatients] prescription failed:", err.message);
     } finally {
@@ -289,7 +378,7 @@ const DoctorPatients = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              {["Patient", "Phone", "Last Visit", "Status", "Visits", "Action"].map((h) => (
+              {["Patient", "Phone", "Last Visit", "Status", "Prescriptions", "Action"].map((h) => (
                 <th
                   key={h}
                   className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
@@ -319,11 +408,11 @@ const DoctorPatients = () => {
                 <PatientRow
                   key={patient.id}
                   patient={patient}
-                  expanded={expandedId === patient.id}
-                  prescribed={!!prescribed[patient.id]}
+                  mode={expanded.patientId === patient.id ? expanded.mode : null}
                   busy={busyId === patient.id}
-                  onToggle={() => setExpandedId((cur) => (cur === patient.id ? null : patient.id))}
+                  onSetMode={(mode) => setExpanded({ patientId: mode ? patient.id : null, mode })}
                   onSave={(payload) => submitPrescription(patient, payload)}
+                  prescriptions={rxByPatient.get(patient.id) ?? []}
                 />
               ))}
           </tbody>
