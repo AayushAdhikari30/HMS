@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import DataTable from "../components/DataTable";
+import DoctorAppointments from "./DoctorAppointments";
 
 const NAV_ITEMS = [
   { to: "/doctor-dashboard", icon: "", label: "Overview" },
@@ -76,7 +77,7 @@ export default function DoctorDashboard() {
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Doctor Dashboard">
       <Routes>
         <Route index element={<DoctorOverview />} />
-        <Route path="appointments" element={<Placeholder label="Appointments" />} />
+        <Route path="appointments" element={<DoctorAppointments />} />
         <Route path="patients" element={<Placeholder label="My Patients" />} />
         <Route path="schedule" element={<Placeholder label="Schedule" />} />
       </Routes>
