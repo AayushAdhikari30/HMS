@@ -92,8 +92,40 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a0a]">
-      <div className="hidden lg:flex flex-1 flex-col justify-between px-14 py-12 bg-[#0a0a0a] border-r border-[#1a1a1a]">
+    <div className="min-h-screen flex bg-[#0a0a0a] relative overflow-hidden">
+      {/* Backdrop: Dhulikhel Hospital photo, darkened + tinted for legibility */}
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/dhulikhel-hospital.jpg.png')" }}
+      />
+      {/* Flat tint for base contrast */}
+      <div className="absolute inset-0 z-0 bg-[#0a0a0a]/60" />
+      {/* Vignette: darker at the edges, clearer toward the center-left where the photo should read */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 65% at 30% 45%, transparent 0%, rgba(10,10,10,0.55) 70%, rgba(10,10,10,0.92) 100%)",
+        }}
+      />
+      {/* Extra darkening toward the right, behind the form panel */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-transparent to-[#0a0a0a]/70" />
+
+      {/* Ambient accents: soft glow orbs + faint dot grid, blended over the photo */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute -top-40 -left-40 w-[30rem] h-[30rem] bg-green-500/20 rounded-full blur-[120px] mix-blend-screen" />
+        <div className="absolute top-1/3 -right-40 w-[34rem] h-[34rem] bg-emerald-500/20 rounded-full blur-[140px] mix-blend-screen" />
+        <div className="absolute -bottom-32 left-1/4 w-[26rem] h-[26rem] bg-teal-500/10 rounded-full blur-[110px] mix-blend-screen" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+      </div>
+
+      <div className="hidden lg:flex flex-1 flex-col justify-between px-14 py-12 relative z-10">
         <div className="flex items-center gap-3">
           <HospitalIcon />
           <span className="text-white font-bold text-xl tracking-tight">
@@ -110,12 +142,18 @@ const Login = () => {
             </span>
           </div>
 
-          <h1 className="text-5xl font-bold text-white leading-tight mb-6 tracking-tight">
+          <h1
+            className="text-5xl font-bold text-white leading-tight mb-6 tracking-tight"
+            style={{ textShadow: "0 4px 20px rgba(0,0,0,0.6)" }}
+          >
             Welcome back<br />
             to <span className="text-green-500">MediCare</span>.
           </h1>
 
-          <p className="text-[#666] text-base leading-relaxed max-w-sm">
+          <p
+            className="text-[#bbb] text-base leading-relaxed max-w-sm"
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7)" }}
+          >
             Sign in to access patient records, appointments, and care
             history — all in one secure place.
           </p>
@@ -134,18 +172,31 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {["HIPAA Compliant", "ISO 27001", "256-bit Encrypted"].map((badge) => (
-            <div key={badge} className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              <span className="text-[#555] text-xs">{badge}</span>
-            </div>
-          ))}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-6">
+            {["HIPAA Compliant", "ISO 27001", "256-bit Encrypted"].map((badge) => (
+              <div key={badge} className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <span className="text-[#555] text-xs">{badge}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[#555] text-xs">
+            Dhulikhel Hospital · Kavrepalanchowk, Nepal
+          </p>
         </div>
       </div>
 
       {/* Right panel — form */}
-      <div className="w-full lg:w-115 flex flex-col justify-center px-8 lg:px-12 py-12 bg-[#0d0d0d]">
+      <div
+        className="
+          w-full lg:w-115 flex flex-col justify-center px-8 lg:px-12 py-12
+          relative z-10 bg-[#0d0d0d]/85 backdrop-blur-xl
+          before:content-[''] before:hidden lg:before:block
+          before:absolute before:left-0 before:top-16 before:bottom-16 before:w-px
+          before:bg-gradient-to-b before:from-transparent before:via-[#2a2a2a] before:to-transparent
+        "
+      >
         <div className="flex items-center gap-2 mb-8 lg:hidden">
           <HospitalIcon />
           <span className="text-white font-bold text-lg">

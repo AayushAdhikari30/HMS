@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import DataTable from "../components/DataTable";
 import DoctorAppointments from "./DoctorAppointments";
@@ -26,8 +26,13 @@ const QUEUE_DATA = [
 ];
 
 const QUICK_ACTIONS = [
-  { label: "Write Prescription", icon: "", description: "Create a new prescription for a patient" },
-  { label: "View Schedule", icon: "", description: "Check your full weekly calendar" },
+  {
+    label: "Write Prescription",
+    icon: "",
+    description: "Create a new prescription for a patient",
+    to: "/doctor-dashboard/appointments",
+  },
+  { label: "View Schedule", icon: "", description: "Check your full weekly calendar", to: "/doctor-dashboard/schedule" },
   { label: "Request Lab Test", icon: "", description: "Order diagnostic tests for a patient" },
   { label: "Refer Patient", icon: "↗", description: "Send a referral to another department" },
 ];
@@ -38,23 +43,29 @@ const Placeholder = ({ label }) => (
   </div>
 );
 
-const QuickActionPanel = ({ actions }) => (
-  <div className="flex flex-col gap-4">
-    <h2 className="text-base font-semibold text-white tracking-tight">Quick Actions</h2>
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
-      {actions.map(({ label, icon, description }) => (
-        <button
-          key={label}
-          className="flex flex-col items-start gap-1.5 p-5 bg-[#111111] border border-[#1a1a1a] rounded-xl text-left cursor-pointer transition-all duration-150 hover:border-green-500/40 hover:shadow-[0_0_0_3px_rgba(34,197,94,0.08)]"
-        >
-          <span className="text-2xl mb-0.5">{icon}</span>
-          <span className="text-sm font-semibold text-white">{label}</span>
-          <span className="text-xs text-[#666] leading-relaxed">{description}</span>
-        </button>
-      ))}
+const QuickActionPanel = ({ actions }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-base font-semibold text-white tracking-tight">Quick Actions</h2>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+        {actions.map(({ label, icon, description, to }) => (
+          <button
+            key={label}
+            onClick={() => to && navigate(to)}
+            disabled={!to}
+            className="flex flex-col items-start gap-1.5 p-5 bg-[#111111] border border-[#1a1a1a] rounded-xl text-left cursor-pointer transition-all duration-150 hover:border-green-500/40 hover:shadow-[0_0_0_3px_rgba(34,197,94,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span className="text-2xl mb-0.5">{icon}</span>
+            <span className="text-sm font-semibold text-white">{label}</span>
+            <span className="text-xs text-[#666] leading-relaxed">{description}</span>
+          </button>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const DoctorOverview = () => (
   <div className="flex flex-col gap-8">

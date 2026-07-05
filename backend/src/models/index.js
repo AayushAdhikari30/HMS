@@ -5,6 +5,7 @@ import StaffProfile from "./StaffProfile.js";
 import Appointment from "./Appointment.js";
 import DoctorAvailability from "./DoctorAvailability.js";
 import DoctorTimeOff from "./DoctorTimeOff.js";
+import Prescription from "./Prescription.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -50,6 +51,27 @@ User.hasMany(DoctorTimeOff, {
 });
 DoctorTimeOff.belongsTo(User, { foreignKey: "doctor_id", as: "doctor" });
 
+// Prescriptions: written by a doctor for a patient, optionally tied to a specific appointment
+Patient.hasMany(Prescription, {
+  foreignKey: "patient_id",
+  as: "prescriptions",
+  onDelete: "CASCADE",
+});
+Prescription.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+
+User.hasMany(Prescription, {
+  foreignKey: "doctor_id",
+  as: "prescriptionsWritten",
+  onDelete: "CASCADE",
+});
+Prescription.belongsTo(User, { foreignKey: "doctor_id", as: "doctor" });
+
+Appointment.hasOne(Prescription, {
+  foreignKey: "appointment_id",
+  as: "prescription",
+});
+Prescription.belongsTo(Appointment, { foreignKey: "appointment_id", as: "appointment" });
+
 export {
   sequelize,
   User,
@@ -58,4 +80,5 @@ export {
   Appointment,
   DoctorAvailability,
   DoctorTimeOff,
+  Prescription,
 };

@@ -4,6 +4,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import MetricCard from "../components/MetricCard";
 import DataTable from "../components/DataTable";
 import PatientAppointments from "./PatientAppointments";
+import PatientPrescriptions from "./PatientPrescriptions";
 
 const NAV_ITEMS = [
   { to: "/patient-dashboard", label: "Overview" },
@@ -96,7 +97,7 @@ export default function PatientDashboard() {
       <Routes>
         <Route index element={<PatientOverview />} />
         <Route path="appointments" element={<PatientAppointments />} />
-        <Route path="prescriptions" element={<Placeholder label="Prescriptions" />} />
+        <Route path="prescriptions" element={<PatientPrescriptions />} />
         <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>
     </DashboardLayout>
