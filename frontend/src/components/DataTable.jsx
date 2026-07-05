@@ -2,6 +2,7 @@ const STATUS_STYLES = {
   completed: "bg-green-500/10 text-green-500",
   pending: "bg-amber-500/10 text-amber-400",
   cancelled: "bg-red-500/10 text-red-400",
+  confirmed: "bg-blue-500/10 text-blue-400",
   "in progress": "bg-blue-500/10 text-blue-400",
 };
 
