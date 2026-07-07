@@ -59,3 +59,12 @@ export const LAB_TEST_STATUS = {
 };
 
 export const LAB_TEST_STATUS_LIST = Object.values(LAB_TEST_STATUS);
+
+export const REFERRAL_STATUS = {
+  PENDING: "pending",
+  ACCEPTED: "accepted",
+  COMPLETED: "completed",
+  CANCELLED: "cancelled",
+};
+
+export const REFERRAL_STATUS_LIST = Object.values(REFERRAL_STATUS);

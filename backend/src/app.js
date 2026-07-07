@@ -9,6 +9,7 @@ import appointmentRoutes from "./routes/appointments.js";
 import doctorRoutes from "./routes/doctors.js";
 import prescriptionRoutes from "./routes/prescriptions.js";
 import labRoutes from "./routes/labs.js";
+import referralRoutes from "./routes/referrals.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/v1/hms/appointments", appointmentRoutes);
 app.use("/api/v1/hms/doctors", doctorRoutes);
 app.use("/api/v1/hms/prescriptions", prescriptionRoutes);
 app.use("/api/v1/hms/labs", labRoutes);
+app.use("/api/v1/hms/referrals", referralRoutes);
 
 app.get("/health", (_, res) => res.json({ status: "ok" }));
 

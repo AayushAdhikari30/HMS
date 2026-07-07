@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 const inputClass = `
   w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5
@@ -13,6 +14,18 @@ const STATUS_STYLES = {
   confirmed: "bg-blue-500/10 text-blue-400",
   completed: "bg-green-500/10 text-green-500",
   cancelled: "bg-red-500/10 text-red-400",
+  requested: "bg-amber-500/10 text-amber-400",
+  in_progress: "bg-blue-500/10 text-blue-400",
+  accepted: "bg-blue-500/10 text-blue-400",
+};
+
+const STATUS_LABEL = {
+  requested: "Requested",
+  in_progress: "In Progress",
+  completed: "Completed",
+  cancelled: "Cancelled",
+  pending: "Pending",
+  accepted: "Accepted",
 };
 
 const formatDate = (iso) => {
@@ -35,7 +48,7 @@ const StatusPill = ({ status }) => (
       STATUS_STYLES[status] ?? "bg-white/5 text-[#888]"
     }`}
   >
-    {status}
+    {STATUS_LABEL[status] ?? status}
   </span>
 );
 
@@ -183,7 +196,175 @@ const PrescribeEditor = ({ onSave, onDismiss, saving }) => {
   );
 };
 
-// --- Read-only view of this doctor's past prescriptions for one patient ---
+// --- Inline "request lab test" form, tied to a patient ---
+const LabTestEditor = ({ onSave, onDismiss, saving }) => {
+  const [testName, setTestName] = useState("");
+  const [notes, setNotes] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSave = () => {
+    setError("");
+    if (!testName.trim()) {
+      setError("Test name is required.");
+      return;
+    }
+    onSave({ testName: testName.trim(), notes: notes.trim() || undefined });
+  };
+
+  return (
+    <div className="bg-white/[0.02] border-t border-[#1a1a1a] px-6 py-5">
+      <div className="flex flex-col gap-3 max-w-xl">
+        <h4 className="text-sm font-semibold text-white">Request Lab Test</h4>
+
+        <div>
+          <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+            Test Name
+          </label>
+          <input
+            type="text"
+            value={testName}
+            onChange={(e) => setTestName(e.target.value)}
+            placeholder="e.g. Complete Blood Count (CBC)"
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+            Notes (optional)
+          </label>
+          <textarea
+            rows={2}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Clinical context for the lab team"
+            className={inputClass}
+          />
+        </div>
+
+        {error && (
+          <div className="text-sm text-red-400 bg-red-500/8 border border-red-500/20 rounded-lg px-4 py-2.5">
+            {error}
+          </div>
+        )}
+
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={onDismiss}
+            className="border border-[#2a2a2a] text-[#888] rounded-md px-3 py-1.5 text-xs font-semibold hover:border-[#444] hover:text-white transition-colors duration-150 cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/40 hover:bg-cyan-500 hover:text-black rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? "Submitting…" : "Send Request"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Inline "refer patient" form, tied to a patient ---
+const ReferEditor = ({ doctors, onSave, onDismiss, saving }) => {
+  const [referredDoctorId, setReferredDoctorId] = useState("");
+  const [reason, setReason] = useState("");
+  const [notes, setNotes] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSave = () => {
+    setError("");
+    if (!referredDoctorId) {
+      setError("Choose a doctor to refer to.");
+      return;
+    }
+    if (!reason.trim()) {
+      setError("Reason for referral is required.");
+      return;
+    }
+    onSave({ referredDoctorId, reason: reason.trim(), notes: notes.trim() || undefined });
+  };
+
+  return (
+    <div className="bg-white/[0.02] border-t border-[#1a1a1a] px-6 py-5">
+      <div className="flex flex-col gap-3 max-w-xl">
+        <h4 className="text-sm font-semibold text-white">Refer Patient</h4>
+
+        <div>
+          <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+            Refer To
+          </label>
+          <select
+            value={referredDoctorId}
+            onChange={(e) => setReferredDoctorId(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Select a doctor…</option>
+            {doctors.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+                {d.department ? ` · ${d.department}` : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+            Reason
+          </label>
+          <textarea
+            rows={2}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Why is this patient being referred?"
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+            Notes (optional)
+          </label>
+          <textarea
+            rows={2}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Additional context for the receiving doctor"
+            className={inputClass}
+          />
+        </div>
+
+        {error && (
+          <div className="text-sm text-red-400 bg-red-500/8 border border-red-500/20 rounded-lg px-4 py-2.5">
+            {error}
+          </div>
+        )}
+
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={onDismiss}
+            className="border border-[#2a2a2a] text-[#888] rounded-md px-3 py-1.5 text-xs font-semibold hover:border-[#444] hover:text-white transition-colors duration-150 cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-orange-500/10 text-orange-400 border border-orange-500/40 hover:bg-orange-500 hover:text-black rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? "Sending…" : "Send Referral"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Read-only view of this doctor's past prescriptions / lab requests / referrals for one patient ---
 const MedicationMiniTable = ({ medications }) => (
   <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-lg overflow-hidden mt-2">
     <table className="w-full border-collapse">
@@ -214,34 +395,82 @@ const MedicationMiniTable = ({ medications }) => (
   </div>
 );
 
-const PrescriptionHistory = ({ prescriptions }) => (
+const PatientHistory = ({ prescriptions, labTests, referrals }) => (
   <div className="bg-white/[0.02] border-t border-[#1a1a1a] px-6 py-5">
-    <div className="flex flex-col gap-4 max-w-3xl">
-      <h4 className="text-sm font-semibold text-white">Prescription History</h4>
-      {prescriptions.length === 0 ? (
-        <p className="text-sm text-[#666]">No prescriptions written for this patient yet.</p>
-      ) : (
-        prescriptions.map((rx) => (
-          <div key={rx.id} className="bg-[#111111] border border-[#1a1a1a] rounded-lg p-4">
-            <div className="flex items-start justify-between flex-wrap gap-2">
-              <h5 className="text-sm font-semibold text-white">{rx.diagnosis || "General prescription"}</h5>
-              <span className="text-xs text-[#555]">{formatDateTime(rx.createdAt)}</span>
+    <div className="flex flex-col gap-6 max-w-3xl">
+      <div className="flex flex-col gap-3">
+        <h4 className="text-sm font-semibold text-white">Prescription History</h4>
+        {prescriptions.length === 0 ? (
+          <p className="text-sm text-[#666]">No prescriptions written for this patient yet.</p>
+        ) : (
+          prescriptions.map((rx) => (
+            <div key={rx.id} className="bg-[#111111] border border-[#1a1a1a] rounded-lg p-4">
+              <div className="flex items-start justify-between flex-wrap gap-2">
+                <h5 className="text-sm font-semibold text-white">{rx.diagnosis || "General prescription"}</h5>
+                <span className="text-xs text-[#555]">{formatDateTime(rx.createdAt)}</span>
+              </div>
+              <MedicationMiniTable medications={rx.medications ?? []} />
+              {rx.notes && (
+                <p className="text-sm text-[#999] mt-2">
+                  <span className="text-[#666] font-semibold">Notes: </span>
+                  {rx.notes}
+                </p>
+              )}
             </div>
-            <MedicationMiniTable medications={rx.medications ?? []} />
-            {rx.notes && (
-              <p className="text-sm text-[#999] mt-2">
-                <span className="text-[#666] font-semibold">Notes: </span>
-                {rx.notes}
-              </p>
-            )}
-          </div>
-        ))
-      )}
+          ))
+        )}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <h4 className="text-sm font-semibold text-white">Lab Requests</h4>
+        {labTests.length === 0 ? (
+          <p className="text-sm text-[#666]">No lab tests requested for this patient yet.</p>
+        ) : (
+          labTests.map((t) => (
+            <div
+              key={t.id}
+              className="bg-[#111111] border border-[#1a1a1a] rounded-lg p-4 flex items-start justify-between flex-wrap gap-2"
+            >
+              <div>
+                <h5 className="text-sm font-semibold text-white">{t.testName}</h5>
+                {t.result && <p className="text-sm text-[#999] mt-1">{t.result}</p>}
+              </div>
+              <div className="flex items-center gap-2">
+                <StatusPill status={t.status} />
+                <span className="text-xs text-[#555] whitespace-nowrap">{formatDateTime(t.createdAt)}</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <h4 className="text-sm font-semibold text-white">Referrals Sent</h4>
+        {referrals.length === 0 ? (
+          <p className="text-sm text-[#666]">No referrals sent for this patient yet.</p>
+        ) : (
+          referrals.map((r) => (
+            <div key={r.id} className="bg-[#111111] border border-[#1a1a1a] rounded-lg p-4">
+              <div className="flex items-start justify-between flex-wrap gap-2">
+                <h5 className="text-sm font-semibold text-white">
+                  To {r.referredDoctor?.name ?? "—"}
+                  {r.referredDoctor?.department ? ` · ${r.referredDoctor.department}` : ""}
+                </h5>
+                <div className="flex items-center gap-2">
+                  <StatusPill status={r.status} />
+                  <span className="text-xs text-[#555] whitespace-nowrap">{formatDateTime(r.createdAt)}</span>
+                </div>
+              </div>
+              <p className="text-sm text-[#999] mt-1">{r.reason}</p>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   </div>
 );
 
-const PatientRow = ({ patient, mode, busy, onSetMode, onSave, prescriptions }) => (
+const PatientRow = ({ patient, mode, busy, onSetMode, onSavePrescription, onSaveLabTest, onSaveReferral, prescriptions, labTests, referrals, doctors }) => (
   <>
     <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
       <td className="px-5 py-3.5 text-sm align-middle">
@@ -268,20 +497,48 @@ const PatientRow = ({ patient, mode, busy, onSetMode, onSave, prescriptions }) =
           >
             {mode === "prescribe" ? "Close" : "Prescribe"}
           </button>
+          <button
+            onClick={() => onSetMode(mode === "lab" ? null : "lab")}
+            disabled={busy}
+            className="border border-cyan-500/40 text-cyan-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-cyan-500 hover:text-black transition-colors duration-150 cursor-pointer disabled:opacity-50"
+          >
+            {mode === "lab" ? "Close" : "Request Lab Test"}
+          </button>
+          <button
+            onClick={() => onSetMode(mode === "refer" ? null : "refer")}
+            disabled={busy}
+            className="border border-orange-500/40 text-orange-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-orange-500 hover:text-black transition-colors duration-150 cursor-pointer disabled:opacity-50"
+          >
+            {mode === "refer" ? "Close" : "Refer"}
+          </button>
         </div>
       </td>
     </tr>
     {mode === "view" && (
       <tr>
         <td colSpan={6} className="p-0">
-          <PrescriptionHistory prescriptions={prescriptions} />
+          <PatientHistory prescriptions={prescriptions} labTests={labTests} referrals={referrals} />
         </td>
       </tr>
     )}
     {mode === "prescribe" && (
       <tr>
         <td colSpan={6} className="p-0">
-          <PrescribeEditor saving={busy} onDismiss={() => onSetMode(null)} onSave={onSave} />
+          <PrescribeEditor saving={busy} onDismiss={() => onSetMode(null)} onSave={onSavePrescription} />
+        </td>
+      </tr>
+    )}
+    {mode === "lab" && (
+      <tr>
+        <td colSpan={6} className="p-0">
+          <LabTestEditor saving={busy} onDismiss={() => onSetMode(null)} onSave={onSaveLabTest} />
+        </td>
+      </tr>
+    )}
+    {mode === "refer" && (
+      <tr>
+        <td colSpan={6} className="p-0">
+          <ReferEditor doctors={doctors} saving={busy} onDismiss={() => onSetMode(null)} onSave={onSaveReferral} />
         </td>
       </tr>
     )}
@@ -289,8 +546,12 @@ const PatientRow = ({ patient, mode, busy, onSetMode, onSave, prescriptions }) =
 );
 
 const DoctorPatients = () => {
+  const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
+  const [labTests, setLabTests] = useState([]);
+  const [referrals, setReferrals] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState({ patientId: null, mode: null });
   const [busyId, setBusyId] = useState(null);
@@ -298,9 +559,18 @@ const DoctorPatients = () => {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [apptRes, rxRes] = await Promise.all([api.get("/appointments"), api.get("/prescriptions")]);
+      const [apptRes, rxRes, labRes, refRes, docRes] = await Promise.all([
+        api.get("/appointments"),
+        api.get("/prescriptions"),
+        api.get("/labs"),
+        api.get("/referrals", { params: { direction: "sent" } }),
+        api.get("/appointments/doctors"),
+      ]);
       if (apptRes.data?.success) setAppointments(apptRes.data.appointments);
       if (rxRes.data?.success) setPrescriptions(rxRes.data.prescriptions);
+      if (labRes.data?.success) setLabTests(labRes.data.labTests);
+      if (refRes.data?.success) setReferrals(refRes.data.referrals);
+      if (docRes.data?.success) setDoctors(docRes.data.doctors);
     } catch (err) {
       console.warn("[DoctorPatients] fetch failed:", err.message);
     } finally {
@@ -312,7 +582,7 @@ const DoctorPatients = () => {
     fetchAll();
   }, [fetchAll]);
 
-  // Group this doctor's prescriptions by patient
+  // Group this doctor's prescriptions / lab requests / referrals by patient
   const rxByPatient = useMemo(() => {
     const map = new Map();
     for (const rx of prescriptions) {
@@ -323,6 +593,34 @@ const DoctorPatients = () => {
     }
     return map;
   }, [prescriptions]);
+
+  const labsByPatient = useMemo(() => {
+    const map = new Map();
+    for (const t of labTests) {
+      if (!t.patient?.id) continue;
+      const list = map.get(t.patient.id) ?? [];
+      list.push(t);
+      map.set(t.patient.id, list);
+    }
+    return map;
+  }, [labTests]);
+
+  const referralsByPatient = useMemo(() => {
+    const map = new Map();
+    for (const r of referrals) {
+      if (!r.patient?.id) continue;
+      const list = map.get(r.patient.id) ?? [];
+      list.push(r);
+      map.set(r.patient.id, list);
+    }
+    return map;
+  }, [referrals]);
+
+  // Doctors this doctor can refer to (exclude self)
+  const referrableDoctors = useMemo(
+    () => doctors.filter((d) => d.id !== user?.id),
+    [doctors, user?.id],
+  );
 
   // Derive a distinct patient list from this doctor's appointment history
   const patients = useMemo(() => {
@@ -358,6 +656,32 @@ const DoctorPatients = () => {
       setExpanded({ patientId: null, mode: null });
     } catch (err) {
       console.error("[DoctorPatients] prescription failed:", err.message);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const submitLabTest = async (patient, { testName, notes }) => {
+    setBusyId(patient.id);
+    try {
+      await api.post("/labs", { patientId: patient.id, testName, notes });
+      await fetchAll();
+      setExpanded({ patientId: null, mode: null });
+    } catch (err) {
+      console.error("[DoctorPatients] lab request failed:", err.message);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const submitReferral = async (patient, { referredDoctorId, reason, notes }) => {
+    setBusyId(patient.id);
+    try {
+      await api.post("/referrals", { patientId: patient.id, referredDoctorId, reason, notes });
+      await fetchAll();
+      setExpanded({ patientId: null, mode: null });
+    } catch (err) {
+      console.error("[DoctorPatients] referral failed:", err.message);
     } finally {
       setBusyId(null);
     }
@@ -411,8 +735,13 @@ const DoctorPatients = () => {
                   mode={expanded.patientId === patient.id ? expanded.mode : null}
                   busy={busyId === patient.id}
                   onSetMode={(mode) => setExpanded({ patientId: mode ? patient.id : null, mode })}
-                  onSave={(payload) => submitPrescription(patient, payload)}
+                  onSavePrescription={(payload) => submitPrescription(patient, payload)}
+                  onSaveLabTest={(payload) => submitLabTest(patient, payload)}
+                  onSaveReferral={(payload) => submitReferral(patient, payload)}
                   prescriptions={rxByPatient.get(patient.id) ?? []}
+                  labTests={labsByPatient.get(patient.id) ?? []}
+                  referrals={referralsByPatient.get(patient.id) ?? []}
+                  doctors={referrableDoctors}
                 />
               ))}
           </tbody>

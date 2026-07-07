@@ -7,6 +7,7 @@ import DoctorAvailability from "./DoctorAvailability.js";
 import DoctorTimeOff from "./DoctorTimeOff.js";
 import Prescription from "./Prescription.js";
 import LabTest from "./LabTest.js";
+import Referral from "./Referral.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -87,6 +88,33 @@ User.hasMany(LabTest, {
 });
 LabTest.belongsTo(User, { foreignKey: "lab_assistant_id", as: "labAssistant" });
 
+// A doctor may also order a lab test on behalf of one of their patients
+User.hasMany(LabTest, {
+  foreignKey: "ordered_by_id",
+  as: "labTestsOrdered",
+});
+LabTest.belongsTo(User, { foreignKey: "ordered_by_id", as: "orderedBy" });
+
+// Referrals: a doctor refers a patient to another doctor
+Patient.hasMany(Referral, {
+  foreignKey: "patient_id",
+  as: "referrals",
+  onDelete: "CASCADE",
+});
+Referral.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+
+User.hasMany(Referral, {
+  foreignKey: "referring_doctor_id",
+  as: "referralsSent",
+});
+Referral.belongsTo(User, { foreignKey: "referring_doctor_id", as: "referringDoctor" });
+
+User.hasMany(Referral, {
+  foreignKey: "referred_doctor_id",
+  as: "referralsReceived",
+});
+Referral.belongsTo(User, { foreignKey: "referred_doctor_id", as: "referredDoctor" });
+
 export {
   sequelize,
   User,
@@ -97,4 +125,5 @@ export {
   DoctorTimeOff,
   Prescription,
   LabTest,
+  Referral,
 };

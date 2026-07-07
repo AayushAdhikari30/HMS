@@ -27,6 +27,10 @@ const LabTest = sequelize.define(
       type: DataTypes.UUID,
       allowNull: true,
     },
+    ordered_by_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
     result: {
       type: DataTypes.TEXT,
       allowNull: true,

@@ -14,21 +14,46 @@ const serializeLabTest = (test) => ({
   labAssistant: test.labAssistant
     ? { id: test.labAssistant.id, identifier: test.labAssistant.identifier }
     : undefined,
+  orderedBy: test.orderedBy
+    ? { id: test.orderedBy.id, identifier: test.orderedBy.identifier }
+    : undefined,
   createdAt: test.createdAt,
 });
 
-// POST /labs — patient checks in for a lab test
+const labTestInclude = [
+  { model: Patient, as: "patient", required: false },
+  { model: User, as: "labAssistant", required: false, attributes: ["id", "identifier"] },
+  { model: User, as: "orderedBy", required: false, attributes: ["id", "identifier"] },
+];
+
+// POST /labs — patient checks in for a lab test, or a doctor orders one for a patient they treat
 export const createLabTest = async (req, res) => {
   try {
-    const { testName, notes } = req.body;
+    const { testName, notes, patientId } = req.body;
 
     if (!testName || !testName.trim()) {
       return res.status(HTTP.BAD_REQUEST).json({ message: "testName is required" });
     }
 
-    const patient = await getPatientForUser(req.user.id);
-    if (!patient) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "Patient profile not found" });
+    let patient;
+    let orderedById = null;
+
+    if (req.user.role === ROLES.PATIENT) {
+      patient = await getPatientForUser(req.user.id);
+      if (!patient) {
+        return res.status(HTTP.BAD_REQUEST).json({ message: "Patient profile not found" });
+      }
+    } else if (req.user.role === ROLES.DOCTOR) {
+      if (!patientId) {
+        return res.status(HTTP.BAD_REQUEST).json({ message: "patientId is required" });
+      }
+      patient = await Patient.findByPk(patientId);
+      if (!patient) {
+        return res.status(HTTP.NOT_FOUND).json({ message: "Patient not found" });
+      }
+      orderedById = req.user.id;
+    } else {
+      return res.status(HTTP.FORBIDDEN).json({ message: "Not allowed to request lab tests" });
     }
 
     const labTest = await LabTest.create({
@@ -36,12 +61,15 @@ export const createLabTest = async (req, res) => {
       test_name: testName.trim(),
       notes: notes || null,
       status: LAB_TEST_STATUS.REQUESTED,
+      ordered_by_id: orderedById,
     });
+
+    const created = await LabTest.findByPk(labTest.id, { include: labTestInclude });
 
     return res.status(HTTP.CREATED).json({
       success: true,
       message: "Lab test requested",
-      labTest: serializeLabTest(labTest),
+      labTest: serializeLabTest(created),
     });
   } catch (err) {
     console.error("[labs/create]", err);
@@ -49,7 +77,8 @@ export const createLabTest = async (req, res) => {
   }
 };
 
-// GET /labs — scoped by role: patient sees own, lab_assistant/admin see all (optionally filtered by status)
+// GET /labs — scoped by role: patient sees own, doctor sees tests they personally ordered,
+// lab_assistant/admin see all (optionally filtered by status)
 export const listLabTests = async (req, res) => {
   try {
     const { status } = req.query;
@@ -62,15 +91,14 @@ export const listLabTests = async (req, res) => {
         return res.status(HTTP.OK).json({ success: true, labTests: [] });
       }
       where.patient_id = patient.id;
+    } else if (req.user.role === ROLES.DOCTOR) {
+      where.ordered_by_id = req.user.id;
     }
     // lab_assistant, admin: no extra scoping — see all requests
 
     const labTests = await LabTest.findAll({
       where,
-      include: [
-        { model: Patient, as: "patient", required: false },
-        { model: User, as: "labAssistant", required: false, attributes: ["id", "identifier"] },
-      ],
+      include: labTestInclude,
       order: [["createdAt", "DESC"]],
     });
 
@@ -116,13 +144,24 @@ export const updateLabTestStatus = async (req, res) => {
   }
 };
 
-// DELETE /labs/:id — patient cancels their own still-pending request
+// DELETE /labs/:id — patient cancels their own still-pending request,
+// or a doctor cancels a test they personally ordered
 export const cancelLabTest = async (req, res) => {
   try {
-    const patient = await getPatientForUser(req.user.id);
     const labTest = await LabTest.findByPk(req.params.id);
+    if (!labTest) {
+      return res.status(HTTP.NOT_FOUND).json({ message: "Lab test not found" });
+    }
 
-    if (!labTest || !patient || labTest.patient_id !== patient.id) {
+    let owns = false;
+    if (req.user.role === ROLES.PATIENT) {
+      const patient = await getPatientForUser(req.user.id);
+      owns = !!patient && labTest.patient_id === patient.id;
+    } else if (req.user.role === ROLES.DOCTOR) {
+      owns = labTest.ordered_by_id === req.user.id;
+    }
+
+    if (!owns) {
       return res.status(HTTP.NOT_FOUND).json({ message: "Lab test not found" });
     }
     if (labTest.status !== LAB_TEST_STATUS.REQUESTED) {
