@@ -6,6 +6,7 @@ import Appointment from "./Appointment.js";
 import DoctorAvailability from "./DoctorAvailability.js";
 import DoctorTimeOff from "./DoctorTimeOff.js";
 import Prescription from "./Prescription.js";
+import LabTest from "./LabTest.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -72,6 +73,20 @@ Appointment.hasOne(Prescription, {
 });
 Prescription.belongsTo(Appointment, { foreignKey: "appointment_id", as: "appointment" });
 
+// Lab tests: patient self-requests a test, a lab assistant (or admin) fulfills it
+Patient.hasMany(LabTest, {
+  foreignKey: "patient_id",
+  as: "labTests",
+  onDelete: "CASCADE",
+});
+LabTest.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+
+User.hasMany(LabTest, {
+  foreignKey: "lab_assistant_id",
+  as: "labTestsHandled",
+});
+LabTest.belongsTo(User, { foreignKey: "lab_assistant_id", as: "labAssistant" });
+
 export {
   sequelize,
   User,
@@ -81,4 +96,5 @@ export {
   DoctorAvailability,
   DoctorTimeOff,
   Prescription,
+  LabTest,
 };

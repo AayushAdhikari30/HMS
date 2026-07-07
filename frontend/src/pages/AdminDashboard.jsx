@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import MetricCard from "../components/MetricCard";
 import AddStaffForm from "../components/AddStaffForm";
+import AdminLabRequests from "./AdminLabRequests";
 import api from "../api/axios";
 
 const NAV_ITEMS = [
@@ -10,6 +11,7 @@ const NAV_ITEMS = [
   { to: "/admin-dashboard/users", icon: "", label: "User Management" },
   { to: "/admin-dashboard/rooms", icon: "", label: "Room Management" },
   { to: "/admin-dashboard/billing", icon: "", label: "Billing" },
+  { to: "/admin-dashboard/lab-requests", icon: "", label: "Lab Requests" },
   { to: "/admin-dashboard/reports", icon: "", label: "Reports" },
 ];
 
@@ -292,6 +294,7 @@ export default function AdminDashboard() {
         <Route path="users" element={<UserManagementPage />} />
         <Route path="rooms" element={<Placeholder label="Room Management" />} />
         <Route path="billing" element={<Placeholder label="Billing" />} />
+        <Route path="lab-requests" element={<AdminLabRequests />} />
         <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>
     </DashboardLayout>

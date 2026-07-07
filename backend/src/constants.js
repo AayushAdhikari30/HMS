@@ -50,3 +50,12 @@ export const APPOINTMENT_STATUS = {
 };
 
 export const APPOINTMENT_STATUS_LIST = Object.values(APPOINTMENT_STATUS);
+
+export const LAB_TEST_STATUS = {
+  REQUESTED: "requested",
+  IN_PROGRESS: "in_progress",
+  COMPLETED: "completed",
+  CANCELLED: "cancelled",
+};
+
+export const LAB_TEST_STATUS_LIST = Object.values(LAB_TEST_STATUS);
