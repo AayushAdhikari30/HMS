@@ -20,6 +20,31 @@ const formatDate = (iso) => {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
 };
 
+const ResultPanel = ({ test }) => (
+  <tr>
+    <td colSpan={4} className="p-0">
+      <div className="bg-white/[0.02] border-t border-[#1a1a1a] px-6 py-5">
+        <div className="flex flex-col gap-3 max-w-2xl">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h4 className="text-sm font-semibold text-white">{test.testName} — Result</h4>
+            <span className="text-xs text-[#555]">Completed {formatDate(test.completedAt)}</span>
+          </div>
+          <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-lg px-4 py-3.5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#666] mb-1.5">Result</p>
+            <p className="text-sm text-[#ddd] whitespace-pre-wrap">{test.result}</p>
+          </div>
+          {test.notes && (
+            <p className="text-sm text-[#999]">
+              <span className="text-[#666] font-semibold">Notes: </span>
+              {test.notes}
+            </p>
+          )}
+        </div>
+      </div>
+    </td>
+  </tr>
+);
+
 const RequestForm = ({ onCreated }) => {
   const [testName, setTestName] = useState("");
   const [notes, setNotes] = useState("");
@@ -90,33 +115,46 @@ const RequestForm = ({ onCreated }) => {
   );
 };
 
-const LabTestRow = ({ test, onCancel }) => (
-  <tr className="border-b border-[#1a1a1a] last:border-none">
-    <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{test.testName}</td>
-    <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{formatDate(test.createdAt)}</td>
-    <td className="px-5 py-3.5 align-middle">
-      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${STATUS_STYLES[test.status] ?? "bg-white/5 text-[#888]"}`}>
-        {STATUS_LABEL[test.status] ?? test.status}
-      </span>
-    </td>
-    <td className="px-5 py-3.5 align-middle">
-      {test.status === "requested" ? (
-        <button
-          onClick={() => onCancel(test.id)}
-          className="border border-red-500/40 text-red-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-red-500 hover:text-white transition-colors duration-150 cursor-pointer"
-        >
-          Cancel
-        </button>
-      ) : (
-        <span className="text-xs text-[#555]">—</span>
-      )}
-    </td>
-  </tr>
+const LabTestRow = ({ test, onCancel, expanded, onToggleView }) => (
+  <>
+    <tr className="border-b border-[#1a1a1a] last:border-none">
+      <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{test.testName}</td>
+      <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{formatDate(test.createdAt)}</td>
+      <td className="px-5 py-3.5 align-middle">
+        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${STATUS_STYLES[test.status] ?? "bg-white/5 text-[#888]"}`}>
+          {STATUS_LABEL[test.status] ?? test.status}
+        </span>
+      </td>
+      <td className="px-5 py-3.5 align-middle">
+        {test.status === "requested" && (
+          <button
+            onClick={() => onCancel(test.id)}
+            className="border border-red-500/40 text-red-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-red-500 hover:text-white transition-colors duration-150 cursor-pointer"
+          >
+            Cancel
+          </button>
+        )}
+        {test.status === "completed" && (
+          <button
+            onClick={() => onToggleView(test.id)}
+            className="border border-green-500/40 text-green-500 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-green-500 hover:text-black transition-colors duration-150 cursor-pointer"
+          >
+            {expanded ? "Hide Result" : "View Result"}
+          </button>
+        )}
+        {(test.status === "in_progress" || test.status === "cancelled") && (
+          <span className="text-xs text-[#555]">—</span>
+        )}
+      </td>
+    </tr>
+    {expanded && test.status === "completed" && <ResultPanel test={test} />}
+  </>
 );
 
 const PatientLabTests = () => {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
 
   const fetchTests = useCallback(async () => {
     setLoading(true);
@@ -187,7 +225,16 @@ const PatientLabTests = () => {
                   </td>
                 </tr>
               )}
-              {!loading && tests.map((t) => <LabTestRow key={t.id} test={t} onCancel={handleCancel} />)}
+              {!loading &&
+                tests.map((t) => (
+                  <LabTestRow
+                    key={t.id}
+                    test={t}
+                    onCancel={handleCancel}
+                    expanded={expandedId === t.id}
+                    onToggleView={(id) => setExpandedId((prev) => (prev === id ? null : id))}
+                  />
+                ))}
             </tbody>
           </table>
         </div>
