@@ -68,7 +68,7 @@ const PrescribeEditor = ({ onSave, onDismiss, saving }) => {
   const addMed = () => setMedications((prev) => [...prev, { ...EMPTY_MED }]);
   const removeMed = (idx) => setMedications((prev) => prev.filter((_, i) => i !== idx));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setError("");
     const cleaned = medications
       .map((m) => ({ ...m, name: m.name.trim() }))
@@ -77,7 +77,11 @@ const PrescribeEditor = ({ onSave, onDismiss, saving }) => {
       setError("Add at least one medication with a name.");
       return;
     }
-    onSave({ diagnosis: diagnosis.trim() || undefined, medications: cleaned, notes: notes.trim() || undefined });
+    try {
+      await onSave({ diagnosis: diagnosis.trim() || undefined, medications: cleaned, notes: notes.trim() || undefined });
+    } catch (err) {
+      setError(err.response?.data?.message || "Could not save prescription. Please try again.");
+    }
   };
 
   return (
@@ -202,13 +206,17 @@ const LabTestEditor = ({ onSave, onDismiss, saving }) => {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setError("");
     if (!testName.trim()) {
       setError("Test name is required.");
       return;
     }
-    onSave({ testName: testName.trim(), notes: notes.trim() || undefined });
+    try {
+      await onSave({ testName: testName.trim(), notes: notes.trim() || undefined });
+    } catch (err) {
+      setError(err.response?.data?.message || "Could not submit lab request. Please try again.");
+    }
   };
 
   return (
@@ -275,7 +283,7 @@ const ReferEditor = ({ doctors, onSave, onDismiss, saving }) => {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setError("");
     if (!referredDoctorId) {
       setError("Choose a doctor to refer to.");
@@ -285,7 +293,11 @@ const ReferEditor = ({ doctors, onSave, onDismiss, saving }) => {
       setError("Reason for referral is required.");
       return;
     }
-    onSave({ referredDoctorId, reason: reason.trim(), notes: notes.trim() || undefined });
+    try {
+      await onSave({ referredDoctorId, reason: reason.trim(), notes: notes.trim() || undefined });
+    } catch (err) {
+      setError(err.response?.data?.message || "Could not send referral. Please try again.");
+    }
   };
 
   return (
@@ -656,6 +668,7 @@ const DoctorPatients = () => {
       setExpanded({ patientId: null, mode: null });
     } catch (err) {
       console.error("[DoctorPatients] prescription failed:", err.message);
+      throw err;
     } finally {
       setBusyId(null);
     }
@@ -669,6 +682,7 @@ const DoctorPatients = () => {
       setExpanded({ patientId: null, mode: null });
     } catch (err) {
       console.error("[DoctorPatients] lab request failed:", err.message);
+      throw err;
     } finally {
       setBusyId(null);
     }
@@ -682,6 +696,7 @@ const DoctorPatients = () => {
       setExpanded({ patientId: null, mode: null });
     } catch (err) {
       console.error("[DoctorPatients] referral failed:", err.message);
+      throw err;
     } finally {
       setBusyId(null);
     }
