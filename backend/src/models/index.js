@@ -8,6 +8,8 @@ import DoctorTimeOff from "./DoctorTimeOff.js";
 import Prescription from "./Prescription.js";
 import LabTest from "./LabTest.js";
 import Referral from "./Referral.js";
+import Invoice from "./Invoice.js";
+import Notification from "./Notification.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -115,6 +117,28 @@ User.hasMany(Referral, {
 });
 Referral.belongsTo(User, { foreignKey: "referred_doctor_id", as: "referredDoctor" });
 
+// Invoices: an admin bills a patient for services
+Patient.hasMany(Invoice, {
+  foreignKey: "patient_id",
+  as: "invoices",
+  onDelete: "CASCADE",
+});
+Invoice.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+
+User.hasMany(Invoice, {
+  foreignKey: "created_by_id",
+  as: "invoicesCreated",
+});
+Invoice.belongsTo(User, { foreignKey: "created_by_id", as: "createdBy" });
+
+// Notifications: in-app inbox per user
+User.hasMany(Notification, {
+  foreignKey: "user_id",
+  as: "notifications",
+  onDelete: "CASCADE",
+});
+Notification.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
 export {
   sequelize,
   User,
@@ -126,4 +150,6 @@ export {
   Prescription,
   LabTest,
   Referral,
+  Invoice,
+  Notification,
 };

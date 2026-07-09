@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import { Patient, User, StaffProfile, Referral } from "../models/index.js";
-import { ROLES, HTTP, REFERRAL_STATUS, REFERRAL_STATUS_LIST } from "../constants.js";
+import { notify } from "../services/notificationService.js";
+import { ROLES, HTTP, REFERRAL_STATUS, REFERRAL_STATUS_LIST, NOTIFICATION_TYPE } from "../constants.js";
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
 
@@ -82,6 +83,24 @@ export const createReferral = async (req, res) => {
       notes: notes || null,
       status: REFERRAL_STATUS.PENDING,
     });
+
+    // Notify the receiving doctor + the patient
+    notify({
+      userId: referredDoctorId,
+      type: NOTIFICATION_TYPE.REFERRAL,
+      title: "New patient referral",
+      body: `${patient.fullname} was referred to you: ${reason.trim()}`,
+      link: "/doctor-dashboard/referrals",
+    });
+    if (patient.user_id) {
+      notify({
+        userId: patient.user_id,
+        type: NOTIFICATION_TYPE.REFERRAL,
+        title: "You have been referred",
+        body: `You were referred to another specialist.`,
+        link: "/patient-dashboard",
+      });
+    }
 
     const created = await Referral.findByPk(referral.id, { include: referralInclude });
 

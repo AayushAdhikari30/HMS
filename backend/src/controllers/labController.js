@@ -1,5 +1,6 @@
 import { Patient, User, LabTest } from "../models/index.js";
-import { ROLES, HTTP, LAB_TEST_STATUS, LAB_TEST_STATUS_LIST } from "../constants.js";
+import { notify } from "../services/notificationService.js";
+import { ROLES, HTTP, LAB_TEST_STATUS, LAB_TEST_STATUS_LIST, NOTIFICATION_TYPE } from "../constants.js";
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
 
@@ -63,6 +64,17 @@ export const createLabTest = async (req, res) => {
       status: LAB_TEST_STATUS.REQUESTED,
       ordered_by_id: orderedById,
     });
+
+    // Notify the patient if a doctor ordered on their behalf
+    if (orderedById && patient.user_id) {
+      notify({
+        userId: patient.user_id,
+        type: NOTIFICATION_TYPE.LAB_TEST,
+        title: "Lab test ordered for you",
+        body: `Your doctor ordered a "${testName.trim()}".`,
+        link: "/patient-dashboard/lab-tests",
+      });
+    }
 
     const created = await LabTest.findByPk(labTest.id, { include: labTestInclude });
 
@@ -136,6 +148,29 @@ export const updateLabTestStatus = async (req, res) => {
       lab_assistant_id: labTest.lab_assistant_id || req.user.id,
       completed_at: status === LAB_TEST_STATUS.COMPLETED ? new Date() : labTest.completed_at,
     });
+
+    // Notify the patient (and ordering doctor, if any) when a test completes
+    if (status === LAB_TEST_STATUS.COMPLETED) {
+      const patient = await Patient.findByPk(labTest.patient_id);
+      if (patient?.user_id) {
+        notify({
+          userId: patient.user_id,
+          type: NOTIFICATION_TYPE.LAB_TEST,
+          title: "Lab results ready",
+          body: `Results for "${labTest.test_name}" are available.`,
+          link: "/patient-dashboard/lab-tests",
+        });
+      }
+      if (labTest.ordered_by_id) {
+        notify({
+          userId: labTest.ordered_by_id,
+          type: NOTIFICATION_TYPE.LAB_TEST,
+          title: "Lab results ready",
+          body: `Results for "${labTest.test_name}" are available.`,
+          link: "/doctor-dashboard/patients",
+        });
+      }
+    }
 
     return res.status(HTTP.OK).json({ success: true, labTest: serializeLabTest(labTest) });
   } catch (err) {

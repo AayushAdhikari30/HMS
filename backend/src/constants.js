@@ -68,3 +68,32 @@ export const REFERRAL_STATUS = {
 };
 
 export const REFERRAL_STATUS_LIST = Object.values(REFERRAL_STATUS);
+
+export const INVOICE_STATUS = {
+  UNPAID: "unpaid",
+  PARTIAL: "partial",
+  PAID: "paid",
+  CANCELLED: "cancelled",
+};
+
+export const INVOICE_STATUS_LIST = Object.values(INVOICE_STATUS);
+
+export const PAYMENT_METHOD = {
+  CASH: "cash",
+  CARD: "card",
+  INSURANCE: "insurance",
+  ONLINE: "online",
+};
+
+export const PAYMENT_METHOD_LIST = Object.values(PAYMENT_METHOD);
+
+export const NOTIFICATION_TYPE = {
+  APPOINTMENT: "appointment",
+  PRESCRIPTION: "prescription",
+  LAB_TEST: "lab_test",
+  REFERRAL: "referral",
+  INVOICE: "invoice",
+  SYSTEM: "system",
+};
+
+export const NOTIFICATION_TYPE_LIST = Object.values(NOTIFICATION_TYPE);

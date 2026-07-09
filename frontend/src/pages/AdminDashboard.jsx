@@ -4,6 +4,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import MetricCard from "../components/MetricCard";
 import AddStaffForm from "../components/AddStaffForm";
 import AdminLabRequests from "./AdminLabRequests";
+import AdminBilling from "./AdminBilling";
 import api from "../api/axios";
 
 const NAV_ITEMS = [
@@ -293,7 +294,7 @@ export default function AdminDashboard() {
         <Route index element={<AdminOverview />} />
         <Route path="users" element={<UserManagementPage />} />
         <Route path="rooms" element={<Placeholder label="Room Management" />} />
-        <Route path="billing" element={<Placeholder label="Billing" />} />
+        <Route path="billing" element={<AdminBilling />} />
         <Route path="lab-requests" element={<AdminLabRequests />} />
         <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>

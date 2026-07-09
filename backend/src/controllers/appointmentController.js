@@ -1,6 +1,7 @@
 import { User, Patient, StaffProfile, Appointment } from "../models/index.js";
 import { computeAvailableSlots } from "../services/availabilityService.js";
-import { ROLES, HTTP, APPOINTMENT_STATUS } from "../constants.js";
+import { notify } from "../services/notificationService.js";
+import { ROLES, HTTP, APPOINTMENT_STATUS, NOTIFICATION_TYPE } from "../constants.js";
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
 
@@ -123,6 +124,14 @@ export const createAppointment = async (req, res) => {
       status: APPOINTMENT_STATUS.PENDING,
     });
 
+    notify({
+      userId: doctorId,
+      type: NOTIFICATION_TYPE.APPOINTMENT,
+      title: "New appointment request",
+      body: `${patient.fullname} requested ${appointmentDate} at ${startTime}.`,
+      link: "/doctor-dashboard/appointments",
+    });
+
     return res.status(HTTP.CREATED).json({
       success: true,
       message: "Appointment requested",
@@ -205,6 +214,23 @@ export const updateAppointmentStatus = async (req, res) => {
       notes: notes ?? appointment.notes,
       cancelled_by: status === APPOINTMENT_STATUS.CANCELLED ? req.user.role : appointment.cancelled_by,
     });
+
+    const patient = await Patient.findByPk(appointment.patient_id);
+    if (patient?.user_id) {
+      const titles = {
+        [APPOINTMENT_STATUS.CONFIRMED]: "Appointment confirmed",
+        [APPOINTMENT_STATUS.CANCELLED]: "Appointment cancelled",
+        [APPOINTMENT_STATUS.COMPLETED]: "Appointment completed",
+        [APPOINTMENT_STATUS.PENDING]: "Appointment reopened",
+      };
+      notify({
+        userId: patient.user_id,
+        type: NOTIFICATION_TYPE.APPOINTMENT,
+        title: titles[status] ?? "Appointment updated",
+        body: `Your ${appointment.appointment_date} ${appointment.start_time} appointment was updated.`,
+        link: "/patient-dashboard/appointments",
+      });
+    }
 
     return res.status(HTTP.OK).json({
       success: true,
