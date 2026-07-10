@@ -3,12 +3,14 @@ import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import MetricCard from "../../components/MetricCard";
 import DataTable from "../../components/DataTable";
+import LabTestRequests from "./LabTestRequests";
+import LabResults from "./LabResults"
 
 const NAV_ITEMS = [
-  { to: "/lab-assistant-dashboard", label: "Overview" },
-  { to: "/lab-assistant-dashboard/requests", label: "Test Requests" },
-  { to: "/lab-assistant-dashboard/results", label: "Results" },
-  { to: "/lab-assistant-dashboard/reports", label: "Reports" },
+  { to: "/lab_assistant-dashboard", label: "Overview" },
+  { to: "/lab_assistant-dashboard/requests", label: "Test Requests" },
+  { to: "/lab_assistant-dashboard/results", label: "Results" },
+  { to: "/lab_assistant-dashboard/reports", label: "Reports" },
 ];
 
 const STATS = [
@@ -106,8 +108,8 @@ export default function LabAssistantDashboard() {
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Lab Dashboard">
       <Routes>
         <Route index element={<LabAssistantOverview />} />
-        <Route path="requests" element={<Placeholder label="Test Requests" />} />
-        <Route path="results" element={<Placeholder label="Results" />} />
+        <Route path="requests" element={<LabTestRequests />} />
+        <Route path="results" element={<LabResults />} />
         <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>
     </DashboardLayout>

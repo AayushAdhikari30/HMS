@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import MetricCard from "../../components/MetricCard";
 import AddStaffForm from "../../components/AddStaffForm";
+import RoomManagement from "./RoomManagement";
 import api from "../../api/axios";
 
 const NAV_ITEMS = [
@@ -291,7 +292,7 @@ export default function AdminDashboard() {
       <Routes>
         <Route index element={<AdminOverview />} />
         <Route path="users" element={<UserManagementPage />} />
-        <Route path="rooms" element={<Placeholder label="Room Management" />} />
+        <Route path="rooms" element={<RoomManagement />} />
         <Route path="billing" element={<Placeholder label="Billing" />} />
         <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>
