@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
+import LabAssistantDashboard from './pages/LabAssistantDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -22,6 +23,10 @@ function App() {
 
         <Route element={<ProtectedRoute allowedRoles={['patient']} />}>
           <Route path="/patient-dashboard/*" element={<PatientDashboard />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={['lab_assistant']} />}>
+          <Route path="/lab-dashboard/*" element={<LabAssistantDashboard />} />
         </Route>
 
         <Route path="*" element={<Login />} />

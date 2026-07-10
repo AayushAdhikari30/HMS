@@ -1,5 +1,5 @@
 import { Patient, User, LabTest } from "../models/index.js";
-import { notify } from "../services/notificationService.js";
+import { notify, notifyMany } from "../services/notificationService.js";
 import { ROLES, HTTP, LAB_TEST_STATUS, LAB_TEST_STATUS_LIST, NOTIFICATION_TYPE } from "../constants.js";
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
@@ -75,6 +75,21 @@ export const createLabTest = async (req, res) => {
         link: "/patient-dashboard/lab-tests",
       });
     }
+
+    // Notify all active lab assistants that a new request is on the queue
+    const labAssistants = await User.findAll({
+      where: { role: ROLES.LAB_ASSISTANT, is_active: true },
+      attributes: ["id"],
+    });
+    notifyMany(
+      labAssistants.map((u) => u.id),
+      {
+        type: NOTIFICATION_TYPE.LAB_TEST,
+        title: "New lab request",
+        body: `"${testName.trim()}" requested for ${patient.fullname}.`,
+        link: "/lab-dashboard/queue",
+      },
+    );
 
     const created = await LabTest.findByPk(labTest.id, { include: labTestInclude });
 

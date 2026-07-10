@@ -24,6 +24,14 @@ const ROLE_CONFIG = {
   patient: { label: "Patient", placeholder: "you@example.com", fieldLabel: "Email" },
   doctor: { label: "Doctor", placeholder: "DOC-2026-0001", fieldLabel: "Staff ID" },
   admin: { label: "Admin", placeholder: "ADM-2026-0001", fieldLabel: "Staff ID" },
+  lab_assistant: { label: "Lab", placeholder: "LAB-2026-0001", fieldLabel: "Staff ID" },
+};
+
+const ROLE_DASHBOARD_PATH = {
+  patient: "/patient-dashboard",
+  doctor: "/doctor-dashboard",
+  admin: "/admin-dashboard",
+  lab_assistant: "/lab-dashboard",
 };
 
 const Login = () => {
@@ -44,8 +52,9 @@ const Login = () => {
     if (stored) {
       try {
         const u = JSON.parse(stored);
-        if (u?.role) {
-          navigate(`/${u.role}-dashboard`);
+        const dest = ROLE_DASHBOARD_PATH[u?.role];
+        if (dest) {
+          navigate(dest);
           return;
         }
       } catch {
@@ -66,7 +75,7 @@ const Login = () => {
       if (res.data.success) {
         localStorage.setItem("hms_token", res.data.accessToken);
         login(res.data.user);
-        navigate(`/${role}-dashboard`);
+        navigate(ROLE_DASHBOARD_PATH[role]);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
