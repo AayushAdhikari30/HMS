@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "seed:medicines": "node src/seed/seedMedicines.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

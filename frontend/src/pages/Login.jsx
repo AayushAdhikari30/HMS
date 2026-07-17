@@ -25,6 +25,7 @@ const ROLE_CONFIG = {
   doctor: { label: "Doctor", placeholder: "DOC-2026-0001", fieldLabel: "Staff ID" },
   admin: { label: "Admin", placeholder: "ADM-2026-0001", fieldLabel: "Staff ID" },
   lab_assistant: { label: "Lab", placeholder: "LAB-2026-0001", fieldLabel: "Staff ID" },
+  pharmacist: { label: "Pharmacy", placeholder: "PHM-2026-0001", fieldLabel: "Staff ID" },
 };
 
 const ROLE_DASHBOARD_PATH = {
@@ -32,6 +33,7 @@ const ROLE_DASHBOARD_PATH = {
   doctor: "/doctor-dashboard",
   admin: "/admin-dashboard",
   lab_assistant: "/lab-dashboard",
+  pharmacist: "/pharmacist-dashboard",
 };
 
 const Login = () => {

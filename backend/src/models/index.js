@@ -10,6 +10,7 @@ import LabTest from "./LabTest.js";
 import Referral from "./Referral.js";
 import Invoice from "./Invoice.js";
 import Notification from "./Notification.js";
+import Medicine from "./Medicine.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -152,4 +153,5 @@ export {
   Referral,
   Invoice,
   Notification,
+  Medicine,
 };
