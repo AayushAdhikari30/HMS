@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import api from "../../api/axios";
+import api from "../api/axios";
 
 const formatDate = (iso) => {
   if (!iso) return "—";
@@ -18,7 +18,7 @@ const MedicationTable = ({ medications }) => (
           {["Medicine", "Dosage", "Frequency", "Duration", "Instructions"].map((h) => (
             <th
               key={h}
-              className="text-left text-[10px] font-bold uppercase tracking-widest text-[#666] px-4 py-2.5 bg-white/2 border-b border-[#1a1a1a]"
+              className="text-left text-[10px] font-bold uppercase tracking-widest text-[#666] px-4 py-2.5 bg-white/[0.02] border-b border-[#1a1a1a]"
             >
               {h}
             </th>
@@ -83,7 +83,6 @@ const PatientPrescriptions = () => {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPrescriptions();
   }, [fetchPrescriptions]);
 

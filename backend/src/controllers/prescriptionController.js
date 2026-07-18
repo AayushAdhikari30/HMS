@@ -1,5 +1,6 @@
 import { Patient, User, StaffProfile, Appointment, Prescription } from "../models/index.js";
-import { ROLES, HTTP } from "../constants.js";
+import { notify } from "../services/notificationService.js";
+import { ROLES, HTTP, NOTIFICATION_TYPE } from "../constants.js";
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
 
@@ -69,6 +70,16 @@ export const createPrescription = async (req, res) => {
       medications,
       notes: notes || null,
     });
+
+    if (patient.user_id) {
+      notify({
+        userId: patient.user_id,
+        type: NOTIFICATION_TYPE.PRESCRIPTION,
+        title: "New prescription",
+        body: diagnosis ? `Prescription issued for ${diagnosis}.` : "A new prescription is available.",
+        link: "/patient-dashboard/prescriptions",
+      });
+    }
 
     return res.status(HTTP.CREATED).json({
       success: true,

@@ -1,11 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import AdminDashboard from './pages/Admin/AdminDashboard';
-import DoctorDashboard from './pages/Doctor/DoctorDashboard';
-import PatientDashboard from './pages/Patient/PatientDashboard';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
+import AdminDashboard from './pages/AdminDashboard';
+import DoctorDashboard from './pages/DoctorDashboard';
+import PatientDashboard from './pages/PatientDashboard';
+import LabAssistantDashboard from './pages/LabAssistantDashboard';
 import PharmacistDashboard from './pages/Pharmacist/PharmacistDashboard';
-import LabAssistantDashboard from './pages/Lab/LabAssistantDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -14,6 +17,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
           <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
         </Route>
@@ -26,12 +32,12 @@ function App() {
           <Route path="/patient-dashboard/*" element={<PatientDashboard />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={['pharmacist']} />}>
-          <Route path="/pharmacist-dashboard/*" element={<PharmacistDashboard />} />
+        <Route element={<ProtectedRoute allowedRoles={['lab_assistant']} />}>
+          <Route path="/lab-dashboard/*" element={<LabAssistantDashboard />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={['lab_assistant']} />}>
-          <Route path="/lab_assistant-dashboard/*" element={<LabAssistantDashboard />} />
+        <Route element={<ProtectedRoute allowedRoles={['pharmacist']} />}>
+          <Route path="/pharmacist-dashboard/*" element={<PharmacistDashboard />} />
         </Route>
 
         <Route path="*" element={<Login />} />
