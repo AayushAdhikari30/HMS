@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../api/axios";
 
 const inputClass = `
@@ -180,17 +180,19 @@ export default function PharmacyReports() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Set default date range (last 30 days)
+  // Set default date range (last 30 days) - runs only once on mount
   useEffect(() => {
     const end = new Date().toISOString().split("T")[0];
     const start = new Date(new Date().setDate(new Date().getDate() - 30))
       .toISOString()
       .split("T")[0];
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStartDate(start);
     setEndDate(end);
-  }, []);
+  }, []); 
 
-  const fetchReport = async () => {
+  // Memoize fetchReport with proper dependencies
+  const fetchReport = useCallback(async () => {
     if (!startDate || !endDate) return;
 
     setLoading(true);
@@ -211,13 +213,14 @@ export default function PharmacyReports() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [reportType, startDate, endDate]); // Add dependencies here
 
   useEffect(() => {
     if (startDate && endDate) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchReport();
     }
-  }, [reportType, startDate, endDate]);
+  }, [fetchReport]); 
 
   return (
     <div className="flex flex-col gap-6">

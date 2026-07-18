@@ -20,11 +20,7 @@ const ROLE_PILL_STYLES = {
   lab_assistant: "bg-cyan-500/10 text-cyan-400",
 };
 
-const Placeholder = ({ label }) => (
-  <div className="bg-[#111111] border border-dashed border-[#2a2a2a] rounded-xl py-16 px-8 text-center text-sm text-[#555]">
-    {label} · Coming Soon
-  </div>
-);
+
 
 const UserRow = ({ user, onToggle, onDelete }) => (
   <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
@@ -289,8 +285,6 @@ export default function AdminDashboard() {
       <Routes>
         <Route index element={<AdminOverview />} />
         <Route path="users" element={<UserManagementPage />} />
-        <Route path="billing" element={<Placeholder label="Billing" />} />
-        <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>
     </DashboardLayout>
   );

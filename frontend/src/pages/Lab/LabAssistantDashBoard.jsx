@@ -21,11 +21,6 @@ const REQUEST_COLUMNS = [
   { key: "status", label: "Status", type: "status" },
 ];
 
-const Placeholder = ({ label }) => (
-  <div className="bg-[#111111] border border-dashed border-[#2a2a2a] rounded-xl py-16 px-8 text-center text-sm text-[#555]">
-    {label} · Coming Soon
-  </div>
-);
 
 const QuickActionPanel = ({ actions }) => (
   <div className="flex flex-col gap-4">
@@ -153,7 +148,6 @@ export default function LabAssistantDashboard() {
         <Route index element={<LabAssistantOverview />} />
         <Route path="requests" element={<LabTestRequests />} />
         <Route path="results" element={<LabResults />} />
-        <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>
     </DashboardLayout>
   );

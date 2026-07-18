@@ -6,7 +6,7 @@ import DataTable from "../../components/DataTable";
 import api from "../../api/axios";
 import PatientAppointments from "./PatientAppointments";
 import PatientPrescriptions from "./PatientPrescriptions";
-
+import PatientReports from "./PatientReports"
 
 const NAV_ITEMS = [
   { to: "/patient-dashboard", label: "Overview" },
@@ -22,11 +22,7 @@ const CHECKUP_COLUMNS = [
   { key: "status", label: "Status", type: "status" },
 ];
 
-const Placeholder = ({ label }) => (
-  <div className="bg-[#111111] border border-dashed border-[#2a2a2a] rounded-xl py-16 px-8 text-center text-sm text-[#555]">
-    {label} · Coming Soon
-  </div>
-);
+
 
 const PatientOverview = () => {
   const [metrics, setMetrics] = useState([
@@ -162,7 +158,7 @@ export default function PatientDashboard() {
         <Route index element={<PatientOverview />} />
         <Route path="appointments" element={<PatientAppointments />} />
         <Route path="prescriptions" element={<PatientPrescriptions />} />
-        <Route path="reports" element={<Placeholder label="Reports" />} />
+        <Route path="reports" element={<PatientReports />} />
       </Routes>
     </DashboardLayout>
   );
