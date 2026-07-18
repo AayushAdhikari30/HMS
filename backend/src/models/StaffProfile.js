@@ -18,13 +18,6 @@ const StaffProfile = sequelize.define(
       type: DataTypes.STRING(150),
       allowNull: false,
     },
-    // Staff log in with a generated staff ID (DOC001), not an email, so their
-    // contact address has to live here or we have no way to reach them.
-    email: {
-      type: DataTypes.STRING(150),
-      allowNull: true,
-      validate: { isEmail: true },
-    },
     phone: {
       type: DataTypes.STRING(20),
       allowNull: true,

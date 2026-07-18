@@ -17,23 +17,13 @@ const ShieldIcon = () => (
   </svg>
 );
 
-// FIX: staff log in with admin-generated IDs (e.g. DOC-2026-0001), not email.
-// The input must accept that, so type="email" can no longer be used and the
-// placeholder/label must reflect each role's actual identifier format.
+
 const ROLE_CONFIG = {
   patient: { label: "Patient", placeholder: "you@example.com", fieldLabel: "Email" },
   doctor: { label: "Doctor", placeholder: "DOC-2026-0001", fieldLabel: "Staff ID" },
+  pharmacist: { label: "Pharmacist", placeholder: "PHM-2026-0001", fieldLabel: "Staff ID" },
+  lab_assistant: { label: "Lab Staff", placeholder: "LAB-2026-0001", fieldLabel: "Staff ID" },
   admin: { label: "Admin", placeholder: "ADM-2026-0001", fieldLabel: "Staff ID" },
-  lab_assistant: { label: "Lab", placeholder: "LAB-2026-0001", fieldLabel: "Staff ID" },
-  pharmacist: { label: "Pharmacy", placeholder: "PHM-2026-0001", fieldLabel: "Staff ID" },
-};
-
-const ROLE_DASHBOARD_PATH = {
-  patient: "/patient-dashboard",
-  doctor: "/doctor-dashboard",
-  admin: "/admin-dashboard",
-  lab_assistant: "/lab-dashboard",
-  pharmacist: "/pharmacist-dashboard",
 };
 
 const Login = () => {
@@ -54,9 +44,8 @@ const Login = () => {
     if (stored) {
       try {
         const u = JSON.parse(stored);
-        const dest = ROLE_DASHBOARD_PATH[u?.role];
-        if (dest) {
-          navigate(dest);
+        if (u?.role) {
+          navigate(`/${u.role}-dashboard`);
           return;
         }
       } catch {
@@ -76,8 +65,10 @@ const Login = () => {
       const res = await api.post("/login", { identifier, password, role });
       if (res.data.success) {
         localStorage.setItem("hms_token", res.data.accessToken);
+        localStorage.setItem("hms_user", JSON.stringify(res.data.user));
         login(res.data.user);
-        navigate(ROLE_DASHBOARD_PATH[role]);
+        const targetRole = res.data.user?.role || role;
+        navigate(`/${targetRole}-dashboard`);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
@@ -104,14 +95,14 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex bg-[#0a0a0a] relative overflow-hidden">
-      {/* Backdrop: Dhulikhel Hospital photo, darkened + tinted for legibility */}
+      
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/dhulikhel-hospital.jpg.png')" }}
+        style={{ backgroundImage: "url('/dhulikhel-hospital.png')" }}
       />
-      {/* Flat tint for base contrast */}
+      
       <div className="absolute inset-0 z-0 bg-[#0a0a0a]/60" />
-      {/* Vignette: darker at the edges, clearer toward the center-left where the photo should read */}
+    
       <div
         className="absolute inset-0 z-0"
         style={{

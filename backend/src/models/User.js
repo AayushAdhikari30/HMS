@@ -37,12 +37,6 @@ const User = sequelize.define(
       defaultValue: 0,
     },
 
-    // Null until the user clicks the link we email on registration.
-    email_verified_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-
     is_active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,

@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import NotificationBell from "./NotificationBell";
 
 const ROLE_LABELS = {
   patient: "Patient Portal",
@@ -29,7 +28,7 @@ const SidebarNavItem = ({ to, icon, label }) => (
       }`
     }
   >
-    <span className="text-base w-5 text-center flex-shrink-0">{icon}</span>
+    <span className="text-base w-5 text-center shrink-0">{icon}</span>
     <span className="whitespace-nowrap">{label}</span>
   </NavLink>
 );
@@ -38,9 +37,8 @@ const TopNavbar = ({ user, onLogout, pageTitle }) => (
   <header className="flex items-center justify-between px-8 h-16 bg-[#0d0d0d] border-b border-[#1a1a1a] sticky top-0 z-10">
     <h1 className="text-base font-semibold text-white tracking-tight">{pageTitle}</h1>
     <div className="flex items-center gap-5">
-      <NotificationBell />
       <div className="flex items-center gap-2.5">
-        <span className="w-8 h-8 rounded-full bg-green-500 text-black text-xs font-bold flex items-center justify-center flex-shrink-0">
+        <span className="w-8 h-8 rounded-full bg-green-500 text-black text-xs font-bold flex items-center justify-center shrink-0">
           {user?.name?.[0]?.toUpperCase() ?? "U"}
         </span>
         <div className="flex flex-col leading-tight">
@@ -59,7 +57,7 @@ const TopNavbar = ({ user, onLogout, pageTitle }) => (
 );
 
 const Sidebar = ({ navItems, role }) => (
-  <aside className="w-60 flex-shrink-0 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col py-6 sticky top-0 h-screen overflow-y-auto">
+  <aside className="w-60 shrink-0 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col py-6 sticky top-0 h-screen overflow-y-auto">
     <div className="flex items-center gap-2 px-6 pb-1">
       <HospitalIcon />
       <span className="text-lg font-bold text-white tracking-tight">

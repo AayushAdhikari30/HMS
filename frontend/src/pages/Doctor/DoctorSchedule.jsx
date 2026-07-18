@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import api from "../api/axios";
+import api from "../../api/axios";
 
 const inputClass = `
   w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5
@@ -113,7 +113,7 @@ const AvailabilityForm = ({ onAdded }) => {
 };
 
 const AvailabilityRow = ({ item, onDelete, deleting }) => (
-  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
+  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
     <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{DAY_NAMES[item.day_of_week]}</td>
     <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">
       {formatTimeLabel(item.start_time)} – {formatTimeLabel(item.end_time)}
@@ -192,7 +192,7 @@ const TimeOffForm = ({ onAdded }) => {
 };
 
 const TimeOffRow = ({ item, onDelete, deleting }) => (
-  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
+  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
     <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{formatDateLabel(item.date)}</td>
     <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{item.reason || "—"}</td>
     <td className="px-5 py-3.5 align-middle">
@@ -231,6 +231,7 @@ const DoctorSchedule = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAll();
   }, [fetchAll]);
 
@@ -273,7 +274,7 @@ const DoctorSchedule = () => {
                 {["Day", "Hours", "Slot Length", "Action"].map((h) => (
                   <th
                     key={h}
-                    className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
+                    className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/2 border-b border-[#1a1a1a]"
                   >
                     {h}
                   </th>
@@ -322,7 +323,7 @@ const DoctorSchedule = () => {
                 {["Date", "Reason", "Action"].map((h) => (
                   <th
                     key={h}
-                    className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
+                    className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/2 border-b border-[#1a1a1a]"
                   >
                     {h}
                   </th>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import api from "../api/axios";
+import api from "../../api/axios";
 
 const inputClass = `
   w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5
@@ -91,6 +91,7 @@ const BookAppointmentPanel = ({ onBooked }) => {
   }, [doctorId, date]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSlots();
   }, [fetchSlots]);
 
@@ -232,7 +233,7 @@ const BookAppointmentPanel = ({ onBooked }) => {
 
 // --- Appointment row ---
 const AppointmentRow = ({ appt, onCancel, cancelling }) => (
-  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
+  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
     <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{formatDate(appt.appointmentDate)}</td>
     <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{formatTime(appt.startTime?.slice(0, 5))}</td>
     <td className="px-5 py-3.5 text-sm align-middle">
@@ -277,6 +278,7 @@ const PatientAppointments = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAppointments();
   }, [fetchAppointments]);
 
@@ -308,7 +310,7 @@ const PatientAppointments = () => {
                 {["Date", "Time", "Doctor", "Department", "Status", "Action"].map((h) => (
                   <th
                     key={h}
-                    className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
+                    className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/2 border-b border-[#1a1a1a]"
                   >
                     {h}
                   </th>
