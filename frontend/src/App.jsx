@@ -5,7 +5,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import DoctorDashboard from './pages/Doctor/DoctorDashboard';
 import PatientDashboard from './pages/Patient/PatientDashboard';
 import PharmacistDashboard from './pages/Pharmacist/PharmacistDashboard';
-import LabAssistantDashboard from './pages/Lab/LabAssistantDashBoard';
+import LabAssistantDashboard from './pages/Lab/LabAssistantDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {

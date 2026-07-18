@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import NotificationBell from "./NotificationBell";
 
 const ROLE_LABELS = {
   patient: "Patient Portal",
@@ -38,7 +37,6 @@ const TopNavbar = ({ user, onLogout, pageTitle }) => (
   <header className="flex items-center justify-between px-8 h-16 bg-[#0d0d0d] border-b border-[#1a1a1a] sticky top-0 z-10">
     <h1 className="text-base font-semibold text-white tracking-tight">{pageTitle}</h1>
     <div className="flex items-center gap-5">
-      <NotificationBell />
       <div className="flex items-center gap-2.5">
         <span className="w-8 h-8 rounded-full bg-green-500 text-black text-xs font-bold flex items-center justify-center shrink-0">
           {user?.name?.[0]?.toUpperCase() ?? "U"}

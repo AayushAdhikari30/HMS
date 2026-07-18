@@ -5,20 +5,7 @@ import {
   signRefreshToken,
   verifyRefreshToken,
 } from "../config/jwt.js";
-import {
-  ROLES,
-  HTTP,
-  JWT,
-  BCRYPT_SALT_ROUNDS,
-  TOKEN_TYPE,
-} from "../constants.js";
-import { issueToken, consumeToken } from "../services/tokenService.js";
-import { getContactForUser, findUserByLoginEmail } from "../services/contactService.js";
-import {
-  sendVerificationEmail,
-  sendPasswordResetEmail,
-  sendPasswordChangedEmail,
-} from "../services/authEmails.js";
+import { ROLES, HTTP, JWT, BCRYPT_SALT_ROUNDS } from "../constants.js";
 
 const cookieOpts = {
   httpOnly: true,
@@ -32,16 +19,7 @@ const buildUserPayload = (user, profile = null) => ({
   role: user.role,
   identifier: user.identifier,
   name: profile?.fullname ?? user.identifier,
-  emailVerified: Boolean(user.email_verified_at),
 });
-
-// Every "did you forget your password" response looks identical whether or not
-// the account exists — otherwise this endpoint becomes a way to enumerate which
-// patients are registered at the hospital.
-const GENERIC_RESET_RESPONSE = {
-  success: true,
-  message: "If that account exists, a reset link is on its way.",
-};
 
 const normaliseIdentifier = (raw, role) => {
   const value = (raw || "").trim();
@@ -89,18 +67,9 @@ export const register = async (req, res) => {
       blood_group: bloodGroup || null,
     });
 
-    // Verification is best-effort: a mail outage must not cost the user their
-    // new account, and they can always request a fresh link.
-    try {
-      const token = await issueToken({ userId: user.id, type: TOKEN_TYPE.EMAIL_VERIFY });
-      await sendVerificationEmail({ to: identifier, name: fullName, token });
-    } catch (mailErr) {
-      console.error("[register] verification email failed", mailErr);
-    }
-
     return res.status(HTTP.CREATED).json({
       success: true,
-      message: "Account created. Check your email for a verification link.",
+      message: "Account created successfully",
     });
   } catch (err) {
     console.error("[register]", err);
@@ -205,135 +174,5 @@ export const logout = async (req, res) => {
   } catch (err) {
     console.error("[logout]", err);
     return res.status(HTTP.INTERNAL).json({ message: "Server error" });
-  }
-};
-
-export const forgotPassword = async (req, res) => {
-  try {
-    const { identifier } = req.body;
-    if (!identifier) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "Identifier is required" });
-    }
-
-    const user = await findUserByLoginEmail(identifier);
-
-    // Inactive accounts and staff with no address on file fall through to the
-    // same generic reply rather than leaking why nothing arrived.
-    if (user?.is_active) {
-      const contact = await getContactForUser(user);
-      if (contact?.email) {
-        const token = await issueToken({ userId: user.id, type: TOKEN_TYPE.PASSWORD_RESET });
-        await sendPasswordResetEmail({ to: contact.email, name: contact.name, token });
-      } else {
-        console.warn(`[forgotPassword] no email on file for user ${user.id} (${user.role})`);
-      }
-    }
-
-    return res.status(HTTP.OK).json(GENERIC_RESET_RESPONSE);
-  } catch (err) {
-    console.error("[forgotPassword]", err);
-    return res.status(HTTP.OK).json(GENERIC_RESET_RESPONSE);
-  }
-};
-
-export const resetPassword = async (req, res) => {
-  try {
-    const { token, password } = req.body;
-
-    if (!token || !password) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "Token and password are required" });
-    }
-    if (password.length < 8) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "Password must be at least 8 characters" });
-    }
-
-    const row = await consumeToken({ token, type: TOKEN_TYPE.PASSWORD_RESET });
-    if (!row) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "This reset link is invalid or has expired" });
-    }
-
-    const user = await User.findByPk(row.user_id);
-    if (!user || !user.is_active) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "This reset link is invalid or has expired" });
-    }
-
-    const password_hash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
-
-    // Bumping the token version invalidates every outstanding refresh token, so
-    // whoever prompted the reset is kicked out of any session they still hold.
-    await user.update({
-      password_hash,
-      refresh_token_version: user.refresh_token_version + 1,
-    });
-
-    const contact = await getContactForUser(user);
-    if (contact?.email) {
-      sendPasswordChangedEmail({ to: contact.email, name: contact.name });
-    }
-
-    return res.status(HTTP.OK).json({
-      success: true,
-      message: "Password updated. You can now sign in.",
-    });
-  } catch (err) {
-    console.error("[resetPassword]", err);
-    return res.status(HTTP.INTERNAL).json({ message: "Internal server error" });
-  }
-};
-
-export const verifyEmail = async (req, res) => {
-  try {
-    const { token } = req.body;
-    if (!token) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "Token is required" });
-    }
-
-    const row = await consumeToken({ token, type: TOKEN_TYPE.EMAIL_VERIFY });
-    if (!row) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "This verification link is invalid or has expired" });
-    }
-
-    const user = await User.findByPk(row.user_id);
-    if (!user) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "This verification link is invalid or has expired" });
-    }
-
-    if (!user.email_verified_at) {
-      await user.update({ email_verified_at: new Date() });
-    }
-
-    return res.status(HTTP.OK).json({ success: true, message: "Email verified" });
-  } catch (err) {
-    console.error("[verifyEmail]", err);
-    return res.status(HTTP.INTERNAL).json({ message: "Internal server error" });
-  }
-};
-
-export const resendVerification = async (req, res) => {
-  const generic = {
-    success: true,
-    message: "If that account needs verifying, a new link is on its way.",
-  };
-
-  try {
-    const { identifier } = req.body;
-    if (!identifier) {
-      return res.status(HTTP.BAD_REQUEST).json({ message: "Identifier is required" });
-    }
-
-    const user = await findUserByLoginEmail(identifier);
-
-    if (user?.is_active && !user.email_verified_at) {
-      const contact = await getContactForUser(user);
-      if (contact?.email) {
-        const token = await issueToken({ userId: user.id, type: TOKEN_TYPE.EMAIL_VERIFY });
-        await sendVerificationEmail({ to: contact.email, name: contact.name, token });
-      }
-    }
-
-    return res.status(HTTP.OK).json(generic);
-  } catch (err) {
-    console.error("[resendVerification]", err);
-    return res.status(HTTP.OK).json(generic);
   }
 };
