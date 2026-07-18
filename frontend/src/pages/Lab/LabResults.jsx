@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import api from "../../api/axios";
 
 const inputClass = `
   w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5
@@ -7,47 +8,9 @@ const inputClass = `
   transition-all duration-200 [color-scheme:dark]
 `;
 
-// Mock data : replace with GET /lab-tests?status=completed once the backend model exists
-const INITIAL_RESULTS = [
-  {
-    id: "lt2",
-    patient: "Anita Sharma",
-    doctor: "Dr. Sita Thapa",
-    testType: "Complete Blood Count",
-    requestedAt: "2026-07-08",
-    completedAt: "2026-07-09",
-    result: "WBC 7.2 x10^9/L, RBC 4.8 x10^12/L, Hemoglobin 13.9 g/dL, Platelets 245 x10^9/L — all within normal range.",
-    critical: false,
-  },
-  {
-    id: "lt4",
-    patient: "Priya Tamang",
-    doctor: "Dr. Ramesh Karki",
-    testType: "Blood Glucose",
-    requestedAt: "2026-07-06",
-    completedAt: "2026-07-06",
-    result: "Fasting glucose 168 mg/dL — elevated, above reference range (70–99 mg/dL).",
-    critical: true,
-  },
-  {
-    id: "lt5",
-    patient: "Roshan KC",
-    doctor: "Dr. Puja Shrestha",
-    testType: "Chest X-Ray",
-    requestedAt: "2026-07-05",
-    completedAt: "2026-07-05",
-    result: "No acute cardiopulmonary abnormality. Lungs clear bilaterally.",
-    critical: false,
-  },
-];
-
 const formatDate = (iso) => {
   if (!iso) return "—";
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  });
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
 };
 
 const CriticalPill = ({ critical }) =>
@@ -76,8 +39,11 @@ const ResultDetailRow = ({ result }) => (
 const ResultRow = ({ result, expanded, onToggle }) => (
   <>
     <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
-      <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{result.patient}</td>
-      <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{result.doctor}</td>
+      <td className="px-5 py-3.5 text-sm align-middle">
+        <span className="font-medium text-[#ddd]">{result.patient?.name ?? "—"}</span>
+        {result.patient?.identifier && <span className="block text-xs text-[#555]">{result.patient.identifier}</span>}
+      </td>
+      <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{result.doctor?.name ?? "—"}</td>
       <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{result.testType}</td>
       <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{formatDate(result.completedAt)}</td>
       <td className="px-5 py-3.5 text-sm align-middle">
@@ -97,22 +63,40 @@ const ResultRow = ({ result, expanded, onToggle }) => (
 );
 
 const LabResults = () => {
-  const [results] = useState(INITIAL_RESULTS);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [criticalOnly, setCriticalOnly] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const debounceRef = useRef(null);
 
-  const filtered = useMemo(() => {
-    return results.filter((r) => {
-      const matchesSearch =
-        !search.trim() ||
-        r.patient.toLowerCase().includes(search.trim().toLowerCase()) ||
-        r.testType.toLowerCase().includes(search.trim().toLowerCase());
-      const matchesCritical = !criticalOnly || r.critical;
-      return matchesSearch && matchesCritical;
-    });
-  }, [results, search, criticalOnly]);
+  const fetchResults = useCallback(async (searchTerm) => {
+    setLoading(true);
+    try {
+      const params = { status: "completed" };
+      if (searchTerm.trim()) params.search = searchTerm.trim();
+      const res = await api.get("/lab-tests", { params });
+      if (res.data?.success) setResults(res.data.labTests);
+    } catch (err) {
+      console.warn("[LabResults] fetch failed:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchResults("");
+  }, [fetchResults]);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchResults(search), 350);
+    return () => clearTimeout(debounceRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  const filtered = criticalOnly ? results.filter((r) => r.critical) : results;
   const criticalCount = results.filter((r) => r.critical).length;
 
   return (
@@ -131,7 +115,7 @@ const LabResults = () => {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by patient or test type…"
+          placeholder="Search by patient name or patient ID…"
           className={`${inputClass} max-w-xs`}
         />
         <label className="flex items-center gap-2 text-sm text-[#ccc] cursor-pointer select-none">
@@ -150,31 +134,32 @@ const LabResults = () => {
           <thead>
             <tr>
               {["Patient", "Requested By", "Test Type", "Completed", "Flag", "Action"].map((h) => (
-                <th
-                  key={h}
-                  className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/2 border-b border-[#1a1a1a]"
-                >
+                <th key={h} className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/2 border-b border-[#1a1a1a]">
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 && (
+            {loading && (
               <tr>
-                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">
-                  No completed results match this view.
-                </td>
+                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">Loading results…</td>
               </tr>
             )}
-            {filtered.map((result) => (
-              <ResultRow
-                key={result.id}
-                result={result}
-                expanded={expandedId === result.id}
-                onToggle={() => setExpandedId(expandedId === result.id ? null : result.id)}
-              />
-            ))}
+            {!loading && filtered.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">No completed results match this view.</td>
+              </tr>
+            )}
+            {!loading &&
+              filtered.map((result) => (
+                <ResultRow
+                  key={result.id}
+                  result={result}
+                  expanded={expandedId === result.id}
+                  onToggle={() => setExpandedId(expandedId === result.id ? null : result.id)}
+                />
+              ))}
           </tbody>
         </table>
       </div>

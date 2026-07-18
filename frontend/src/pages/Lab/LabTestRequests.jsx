@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, Fragment } from "react";
+import api from "../../api/axios";
 
 const inputClass = `
   w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5
@@ -15,13 +16,14 @@ const STATUS_STYLES = {
 
 const STATUS_FILTERS = ["All", "pending", "collected", "completed"];
 
-// Mock data : replace with GET /lab-tests once the backend model exists
-const INITIAL_REQUESTS = [
-  { id: "lt1", patient: "Sanjay Gurung", doctor: "Dr. Ramesh Karki", testType: "Lipid Panel", requestedAt: "2026-07-08", status: "pending" },
-  { id: "lt2", patient: "Anita Sharma", doctor: "Dr. Sita Thapa", testType: "Complete Blood Count", requestedAt: "2026-07-08", status: "collected" },
-  { id: "lt3", patient: "Bikram Magar", doctor: "Dr. Bikash Rai", testType: "MRI - Brain", requestedAt: "2026-07-07", status: "pending" },
-  { id: "lt4", patient: "Priya Tamang", doctor: "Dr. Ramesh Karki", testType: "Blood Glucose", requestedAt: "2026-07-06", status: "collected" },
-];
+const formatDate = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+};
 
 const StatusPill = ({ status }) => (
   <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide capitalize ${STATUS_STYLES[status] ?? "bg-white/5 text-[#888]"}`}>
@@ -54,7 +56,7 @@ const ResultEntryRow = ({ onSave, onCancel, saving }) => {
               Cancel
             </button>
             <button
-              onClick={() => value.trim() && onSave({ value: value.trim(), critical })}
+              onClick={() => value.trim() && onSave({ result: value.trim(), critical })}
               disabled={saving || !value.trim()}
               className="bg-green-500/10 text-green-500 border border-green-500/40 hover:bg-green-500 hover:text-black rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -69,10 +71,13 @@ const ResultEntryRow = ({ onSave, onCancel, saving }) => {
 
 const RequestRow = ({ req, onCollect, onStartResult, busy }) => (
   <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
-    <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{req.patient}</td>
-    <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{req.doctor}</td>
+    <td className="px-5 py-3.5 text-sm align-middle">
+      <span className="font-medium text-[#ddd]">{req.patient?.name ?? "—"}</span>
+      {req.patient?.identifier && <span className="block text-xs text-[#555]">{req.patient.identifier}</span>}
+    </td>
+    <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{req.doctor?.name ?? "—"}</td>
     <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{req.testType}</td>
-    <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{req.requestedAt}</td>
+    <td className="px-5 py-3.5 text-sm text-[#999] align-middle">{formatDate(req.requestedAt)}</td>
     <td className="px-5 py-3.5 text-sm align-middle"><StatusPill status={req.status} /></td>
     <td className="px-5 py-3.5 align-middle">
       {req.status === "pending" && (
@@ -99,27 +104,67 @@ const RequestRow = ({ req, onCollect, onStartResult, busy }) => (
 );
 
 const LabTestRequests = () => {
-  const [requests, setRequests] = useState(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
   const [resultRowId, setResultRowId] = useState(null);
   const [busyId, setBusyId] = useState(null);
+  const debounceRef = useRef(null);
 
-  const filtered = useMemo(
-    () => (filter === "All" ? requests : requests.filter((r) => r.status === filter)),
-    [requests, filter],
-  );
+  const fetchRequests = useCallback(async (statusFilter, searchTerm) => {
+    setLoading(true);
+    try {
+      const params = {};
+      if (statusFilter !== "All") params.status = statusFilter;
+      if (searchTerm.trim()) params.search = searchTerm.trim();
+      const res = await api.get("/lab-tests", { params });
+      if (res.data?.success) setRequests(res.data.labTests);
+    } catch (err) {
+      console.warn("[LabTestRequests] fetch failed:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const handleCollect = (id) => {
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchRequests(filter, search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchRequests(filter, search), 350);
+    return () => clearTimeout(debounceRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  const handleCollect = async (id) => {
     setBusyId(id);
-    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: "collected" } : r)));
-    setBusyId(null);
+    try {
+      await api.patch(`/lab-tests/${id}/collect`);
+      setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: "collected" } : r)));
+    } catch (err) {
+      console.error("[LabTestRequests] collect failed:", err.message);
+    } finally {
+      setBusyId(null);
+    }
   };
 
-  const handleSaveResult = (id, { value, critical }) => {
+  const handleSaveResult = async (id, payload) => {
     setBusyId(id);
-    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: "completed", result: value, critical } : r)));
-    setResultRowId(null);
-    setBusyId(null);
+    try {
+      await api.patch(`/lab-tests/${id}/result`, payload);
+      setRequests((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: "completed", result: payload.result, critical: payload.critical } : r)),
+      );
+      setResultRowId(null);
+    } catch (err) {
+      console.error("[LabTestRequests] result save failed:", err.message);
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const pendingCount = requests.filter((r) => r.status === "pending").length;
@@ -135,18 +180,28 @@ const LabTestRequests = () => {
         )}
       </div>
 
-      <div className="flex gap-2 flex-wrap">
-        {STATUS_FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-3.5 py-1.5 rounded-full border text-xs font-medium capitalize transition-colors duration-150 cursor-pointer ${
-              filter === f ? "bg-green-500 border-green-500 text-black" : "border-[#2a2a2a] text-[#888] hover:border-green-500/40 hover:text-green-500"
-            }`}
-          >
-            {f}
-          </button>
-        ))}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex gap-2 flex-wrap">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3.5 py-1.5 rounded-full border text-xs font-medium capitalize transition-colors duration-150 cursor-pointer ${
+                filter === f ? "bg-green-500 border-green-500 text-black" : "border-[#2a2a2a] text-[#888] hover:border-green-500/40 hover:text-green-500"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by patient name or patient ID…"
+          className={`${inputClass} max-w-xs`}
+        />
       </div>
 
       <div className="bg-[#111111] border border-[#1a1a1a] rounded-xl overflow-hidden">
@@ -161,30 +216,34 @@ const LabTestRequests = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 && (
+            {loading && (
               <tr>
-                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">No requests in this view.</td>
+                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">Loading requests…</td>
               </tr>
             )}
-            {filtered.map((req) => (
-              <>
-                <RequestRow
-                  key={req.id}
-                  req={req}
-                  busy={busyId === req.id}
-                  onCollect={handleCollect}
-                  onStartResult={(id) => setResultRowId(id)}
-                />
-                {resultRowId === req.id && (
-                  <ResultEntryRow
-                    key={`${req.id}-editor`}
-                    saving={busyId === req.id}
-                    onCancel={() => setResultRowId(null)}
-                    onSave={(payload) => handleSaveResult(req.id, payload)}
+            {!loading && requests.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-5 py-6 text-center text-sm text-[#666]">No requests match this view.</td>
+              </tr>
+            )}
+            {!loading &&
+              requests.map((req) => (
+                <Fragment key={req.id}>
+                  <RequestRow
+                    req={req}
+                    busy={busyId === req.id}
+                    onCollect={handleCollect}
+                    onStartResult={(id) => setResultRowId(id)}
                   />
-                )}
-              </>
-            ))}
+                  {resultRowId === req.id && (
+                    <ResultEntryRow
+                      saving={busyId === req.id}
+                      onCancel={() => setResultRowId(null)}
+                      onSave={(payload) => handleSaveResult(req.id, payload)}
+                    />
+                  )}
+                </Fragment>
+              ))}
           </tbody>
         </table>
       </div>

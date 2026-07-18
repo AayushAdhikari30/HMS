@@ -65,7 +65,6 @@ const Login = () => {
       const res = await api.post("/login", { identifier, password, role });
       if (res.data.success) {
         localStorage.setItem("hms_token", res.data.accessToken);
-        // persist user for client-side redirects
         localStorage.setItem("hms_user", JSON.stringify(res.data.user));
         login(res.data.user);
         const targetRole = res.data.user?.role || role;

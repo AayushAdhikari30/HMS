@@ -15,6 +15,22 @@ const STATUS_STYLES = {
     cancelled: "bg-red-500/10 text-red-400",
 };
 
+const TEST_TYPES = [
+    "Complete Blood Count",
+    "Lipid Panel",
+    "Blood Glucose",
+    "Liver Function Test",
+    "Kidney Function Test",
+    "Thyroid Panel",
+    "Urinalysis",
+    "Chest X-Ray",
+    "MRI - Brain",
+    "CT Scan",
+    "ECG",
+    "COVID-19 PCR",
+    "Other",
+];
+
 const formatDate = (iso) => {
     if (!iso) return "—";
     return new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
@@ -181,6 +197,93 @@ const PrescribeEditor = ({ onSave, onDismiss, saving }) => {
     );
 };
 
+const LabTestEditor = ({ onSave, onDismiss, saving }) => {
+    const [testType, setTestType] = useState(TEST_TYPES[0]);
+    const [customType, setCustomType] = useState("");
+    const [notes, setNotes] = useState("");
+    const [error, setError] = useState("");
+
+    const handleSave = () => {
+        setError("");
+        const finalType = testType === "Other" ? customType.trim() : testType;
+        if (!finalType) {
+            setError("Please specify a test type.");
+            return;
+        }
+        onSave({ testType: finalType, notes: notes.trim() || undefined });
+    };
+
+    return (
+        <div className="bg-white/2 border-t border-[#1a1a1a] px-6 py-5">
+            <div className="flex flex-col gap-3 max-w-lg">
+                <h4 className="text-sm font-semibold text-white">Request Lab Test</h4>
+
+                <div>
+                    <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+                        Test Type
+                    </label>
+                    <select value={testType} onChange={(e) => setTestType(e.target.value)} className={inputClass}>
+                        {TEST_TYPES.map((t) => (
+                            <option key={t} value={t}>
+                                {t}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {testType === "Other" && (
+                    <div>
+                        <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+                            Specify Test
+                        </label>
+                        <input
+                            type="text"
+                            value={customType}
+                            onChange={(e) => setCustomType(e.target.value)}
+                            placeholder="e.g. HbA1c"
+                            className={inputClass}
+                        />
+                    </div>
+                )}
+
+                <div>
+                    <label className="text-[#888] text-xs font-semibold uppercase tracking-widest block mb-1.5">
+                        Notes (optional)
+                    </label>
+                    <textarea
+                        rows={2}
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="Clinical context for the lab"
+                        className={inputClass}
+                    />
+                </div>
+
+                {error && (
+                    <div className="text-sm text-red-400 bg-red-500/8 border border-red-500/20 rounded-lg px-4 py-2.5">
+                        {error}
+                    </div>
+                )}
+
+                <div className="flex gap-2 justify-end">
+                    <button
+                        onClick={onDismiss}
+                        className="border border-[#2a2a2a] text-[#888] rounded-md px-3 py-1.5 text-xs font-semibold hover:border-[#444] hover:text-white transition-colors duration-150 cursor-pointer"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="bg-blue-500/10 text-blue-400 border border-blue-500/40 hover:bg-blue-500 hover:text-black rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {saving ? "Sending…" : "Send Request"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const MedicationMiniTable = ({ medications }) => (
     <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-lg overflow-hidden mt-2">
@@ -239,7 +342,7 @@ const PrescriptionHistory = ({ prescriptions }) => (
     </div>
 );
 
-const PatientRow = ({ patient, mode, busy, onSetMode, onSave, prescriptions }) => (
+const PatientRow = ({ patient, mode, busy, onSetMode, onSavePrescription, onSaveLabTest, prescriptions }) => (
     <>
         <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
             <td className="px-5 py-3.5 text-sm align-middle">
@@ -266,6 +369,13 @@ const PatientRow = ({ patient, mode, busy, onSetMode, onSave, prescriptions }) =
                     >
                         {mode === "prescribe" ? "Close" : "Prescribe"}
                     </button>
+                    <button
+                        onClick={() => onSetMode(mode === "labtest" ? null : "labtest")}
+                        disabled={busy}
+                        className="border border-blue-500/40 text-blue-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-blue-500 hover:text-black transition-colors duration-150 cursor-pointer disabled:opacity-50"
+                    >
+                        {mode === "labtest" ? "Close" : "Request Lab Test"}
+                    </button>
                 </div>
             </td>
         </tr>
@@ -279,7 +389,14 @@ const PatientRow = ({ patient, mode, busy, onSetMode, onSave, prescriptions }) =
         {mode === "prescribe" && (
             <tr>
                 <td colSpan={6} className="p-0">
-                    <PrescribeEditor saving={busy} onDismiss={() => onSetMode(null)} onSave={onSave} />
+                    <PrescribeEditor saving={busy} onDismiss={() => onSetMode(null)} onSave={onSavePrescription} />
+                </td>
+            </tr>
+        )}
+        {mode === "labtest" && (
+            <tr>
+                <td colSpan={6} className="p-0">
+                    <LabTestEditor saving={busy} onDismiss={() => onSetMode(null)} onSave={onSaveLabTest} />
                 </td>
             </tr>
         )}
@@ -362,6 +479,18 @@ const DoctorPatients = () => {
         }
     };
 
+    const submitLabTest = async (patient, { testType, notes }) => {
+        setBusyId(patient.id);
+        try {
+            await api.post("/lab-tests", { patientId: patient.id, testType, notes });
+            setExpanded({ patientId: null, mode: null });
+        } catch (err) {
+            console.error("[DoctorPatients] lab test request failed:", err.message);
+        } finally {
+            setBusyId(null);
+        }
+    };
+
     return (
         <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between flex-wrap gap-3">
@@ -410,7 +539,8 @@ const DoctorPatients = () => {
                                     mode={expanded.patientId === patient.id ? expanded.mode : null}
                                     busy={busyId === patient.id}
                                     onSetMode={(mode) => setExpanded({ patientId: mode ? patient.id : null, mode })}
-                                    onSave={(payload) => submitPrescription(patient, payload)}
+                                    onSavePrescription={(payload) => submitPrescription(patient, payload)}
+                                    onSaveLabTest={(payload) => submitLabTest(patient, payload)}
                                     prescriptions={rxByPatient.get(patient.id) ?? []}
                                 />
                             ))}

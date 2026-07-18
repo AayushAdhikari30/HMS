@@ -29,8 +29,7 @@ const QUICK_ACTIONS = [
     to: "/doctor-dashboard/patients",
   },
   { label: "View Schedule", icon: "", description: "Check your full weekly calendar", to: "/doctor-dashboard/schedule" },
-  { label: "Request Lab Test", icon: "", description: "Order diagnostic tests for a patient" },
-  { label: "Refer Patient", icon: "↗", description: "Send a referral to another department" },
+  { label: "Request Lab Test", icon: "", description: "Order diagnostic tests for a patient" ,to: "/doctor-dashboard/patients"},
 ];
 
 const formatTime = (t) => {

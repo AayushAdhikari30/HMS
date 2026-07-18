@@ -6,6 +6,7 @@ import Appointment from "./Appointment.js";
 import DoctorAvailability from "./DoctorAvailability.js";
 import DoctorTimeOff from "./DoctorTimeOff.js";
 import Prescription from "./Prescription.js";
+import LabTest from "./LabTest.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -21,7 +22,6 @@ User.hasOne(StaffProfile, {
 });
 StaffProfile.belongsTo(User, { foreignKey: "user_id", as: "account" });
 
-// Appointments: patient books with a doctor (doctor is a User with role="doctor")
 Patient.hasMany(Appointment, {
   foreignKey: "patient_id",
   as: "appointments",
@@ -36,7 +36,6 @@ User.hasMany(Appointment, {
 });
 Appointment.belongsTo(User, { foreignKey: "doctor_id", as: "doctor" });
 
-// Doctor availability: recurring weekly windows + one-off days off
 User.hasMany(DoctorAvailability, {
   foreignKey: "doctor_id",
   as: "availability",
@@ -51,7 +50,6 @@ User.hasMany(DoctorTimeOff, {
 });
 DoctorTimeOff.belongsTo(User, { foreignKey: "doctor_id", as: "doctor" });
 
-// Prescriptions: written by a doctor for a patient, optionally tied to a specific appointment
 Patient.hasMany(Prescription, {
   foreignKey: "patient_id",
   as: "prescriptions",
@@ -70,8 +68,24 @@ Appointment.hasOne(Prescription, {
   foreignKey: "appointment_id",
   as: "prescription",
 });
-Prescription.belongsTo(Appointment, { foreignKey: "appointment_id", as: "appointment" });
+Prescription.belongsTo(Appointment, {
+  foreignKey: "appointment_id",
+  as: "appointment",
+});
 
+Patient.hasMany(LabTest, {
+  foreignKey: "patient_id",
+  as: "LabTests",
+  onDelete: "CASCADE",
+});
+LabTest.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+
+User.hasMany(LabTest, {
+  foreignKey: "doctor_id",
+  as: "labTestsRequested",
+  onDelete: "CASCADE",
+});
+LabTest.belongsTo(User , {foreignKey: "doctor_id", as: "doctor"});
 export {
   sequelize,
   User,
@@ -81,4 +95,5 @@ export {
   DoctorAvailability,
   DoctorTimeOff,
   Prescription,
+  LabTest,
 };
