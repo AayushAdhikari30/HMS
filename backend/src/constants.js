@@ -1,3 +1,18 @@
+export const LAB_TEST_STATUS = {
+  PENDING: "pending",
+  COLLECTED: "collected",
+  COMPLETED: "completed",
+};
+export const LAB_TEST_STATUS_LIST = Object.values(LAB_TEST_STATUS);
+
+export const APPOINTMENT_STATUS = {
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  CANCELLED: "cancelled",
+  COMPLETED: "completed",
+};
+export const APPOINTMENT_STATUS_LIST = Object.values(APPOINTMENT_STATUS);
+
 export const ROLES = {
   PATIENT: "patient",
   DOCTOR: "doctor",

@@ -14,29 +14,34 @@ const LabTest = sequelize.define(
       type: DataTypes.UUID,
       allowNull: false,
     },
-    test_name: {
+    doctor_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    test_type: {
       type: DataTypes.STRING(150),
       allowNull: false,
     },
     status: {
       type: DataTypes.ENUM(...LAB_TEST_STATUS_LIST),
       allowNull: false,
-      defaultValue: "requested",
+      defaultValue: "pending",
     },
-    lab_assistant_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-    },
-    ordered_by_id: {
-      type: DataTypes.UUID,
+    notes: {
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     result: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    notes: {
-      type: DataTypes.TEXT,
+    critical: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    collected_at: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
     completed_at: {
@@ -47,7 +52,11 @@ const LabTest = sequelize.define(
   {
     tableName: "lab_tests",
     timestamps: true,
-    indexes: [{ fields: ["patient_id"] }, { fields: ["status"] }],
+    indexes: [
+      { fields: ["patient_id"] },
+      { fields: ["doctor_id"] },
+      { fields: ["status"] },
+    ],
   },
 );
 

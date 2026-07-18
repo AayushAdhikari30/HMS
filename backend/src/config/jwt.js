@@ -5,7 +5,6 @@ export const signAccessToken = (payload) =>
   jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
     expiresIn: JWT.ACCESS_TOKEN_EXPIRES_IN,
   });
-
 export const signRefreshToken = (payload) =>
   jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
     expiresIn: JWT.REFRESH_TOKEN_EXPIRES_IN,
