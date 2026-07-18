@@ -11,6 +11,7 @@ import Referral from "./Referral.js";
 import Invoice from "./Invoice.js";
 import Notification from "./Notification.js";
 import Medicine from "./Medicine.js";
+import VerificationToken from "./VerificationToken.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -140,6 +141,15 @@ User.hasMany(Notification, {
 });
 Notification.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
+// Verification / password-reset tokens: deleting the account must take its
+// outstanding tokens with it.
+User.hasMany(VerificationToken, {
+  foreignKey: "user_id",
+  as: "verificationTokens",
+  onDelete: "CASCADE",
+});
+VerificationToken.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
 export {
   sequelize,
   User,
@@ -154,4 +164,5 @@ export {
   Invoice,
   Notification,
   Medicine,
+  VerificationToken,
 };

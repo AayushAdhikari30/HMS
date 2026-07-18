@@ -29,6 +29,19 @@ export const JWT = {
   COOKIE_MAX_AGE_MS: 7 * 24 * 60 * 60 * 1000,
 };
 
+export const TOKEN_TYPE = {
+  EMAIL_VERIFY: "email_verify",
+  PASSWORD_RESET: "password_reset",
+};
+
+export const TOKEN_TYPE_LIST = Object.values(TOKEN_TYPE);
+
+// Reset links are deliberately short-lived; verification links are not urgent.
+export const TOKEN_TTL_MS = {
+  [TOKEN_TYPE.EMAIL_VERIFY]: 24 * 60 * 60 * 1000, // 24 hours
+  [TOKEN_TYPE.PASSWORD_RESET]: 60 * 60 * 1000, // 1 hour
+};
+
 export const HTTP = {
   OK: 200,
   CREATED: 201,
@@ -37,6 +50,7 @@ export const HTTP = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  TOO_MANY_REQUESTS: 429,
   INTERNAL: 500,
 };
 
