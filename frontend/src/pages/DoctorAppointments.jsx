@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, Fragment } from "react";
-import api from "../../api/axios";
+import api from "../api/axios";
 
 const inputClass = `
   w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5
@@ -49,7 +49,7 @@ const StatusPill = ({ status }) => (
 const CompleteEditor = ({ onSave, onDismiss, saving }) => {
   const [notes, setNotes] = useState("");
   return (
-    <tr className="bg-white/2 border-b border-[#1a1a1a]">
+    <tr className="bg-white/[0.02] border-b border-[#1a1a1a]">
       <td colSpan={6} className="px-5 py-4">
         <div className="flex flex-col gap-2.5">
           <label className="text-[#888] text-xs font-semibold uppercase tracking-widest">
@@ -87,14 +87,14 @@ const AppointmentRow = ({ appt, onUpdateStatus, onStartComplete, busyId }) => {
   const busy = busyId === appt.id;
 
   return (
-    <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
+    <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
       <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{formatDate(appt.appointmentDate)}</td>
       <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{formatTime(appt.startTime)}</td>
       <td className="px-5 py-3.5 text-sm align-middle">
         <span className="font-medium text-[#ddd]">{appt.patient?.name ?? "—"}</span>
         {appt.patient?.phone && <span className="block text-xs text-[#666]">{appt.patient.phone}</span>}
       </td>
-      <td className="px-5 py-3.5 text-sm text-[#999] align-middle max-w-55 truncate">
+      <td className="px-5 py-3.5 text-sm text-[#999] align-middle max-w-[220px] truncate">
         {appt.reason || "—"}
       </td>
       <td className="px-5 py-3.5 text-sm align-middle">
@@ -167,7 +167,6 @@ const DoctorAppointments = () => {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAppointments();
   }, [fetchAppointments]);
 
@@ -227,7 +226,7 @@ const DoctorAppointments = () => {
               {["Date", "Time", "Patient", "Reason", "Status", "Action"].map((h) => (
                 <th
                   key={h}
-                  className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/2 border-b border-[#1a1a1a]"
+                  className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
                 >
                   {h}
                 </th>

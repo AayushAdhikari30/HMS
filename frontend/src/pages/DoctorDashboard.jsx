@@ -1,16 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import DashboardLayout from "../../components/DashboardLayout";
-import DataTable from "../../components/DataTable";
+import DashboardLayout from "../components/DashboardLayout";
+import DataTable from "../components/DataTable";
 import DoctorAppointments from "./DoctorAppointments";
 import DoctorPatients from "./DoctorPatients";
 import DoctorSchedule from "./DoctorSchedule";
-import api from "../../api/axios";
+import DoctorReferrals from "./DoctorReferrals";
+import api from "../api/axios";
 
 const NAV_ITEMS = [
   { to: "/doctor-dashboard", icon: "", label: "Overview" },
   { to: "/doctor-dashboard/appointments", icon: "", label: "Appointments" },
   { to: "/doctor-dashboard/patients", icon: "", label: "My Patients" },
+  { to: "/doctor-dashboard/referrals", icon: "", label: "Referrals" },
   { to: "/doctor-dashboard/schedule", icon: "", label: "Schedule" },
 ];
 
@@ -29,7 +31,18 @@ const QUICK_ACTIONS = [
     to: "/doctor-dashboard/patients",
   },
   { label: "View Schedule", icon: "", description: "Check your full weekly calendar", to: "/doctor-dashboard/schedule" },
-  { label: "Request Lab Test", icon: "", description: "Order diagnostic tests for a patient" ,to: "/doctor-dashboard/patients"},
+  {
+    label: "Request Lab Test",
+    icon: "",
+    description: "Order diagnostic tests for a patient",
+    to: "/doctor-dashboard/patients",
+  },
+  {
+    label: "Refer Patient",
+    icon: "↗",
+    description: "Send a referral to another doctor",
+    to: "/doctor-dashboard/patients",
+  },
 ];
 
 const formatTime = (t) => {
@@ -95,7 +108,6 @@ const DoctorOverview = () => {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTodaysQueue();
   }, [fetchTodaysQueue]);
 
@@ -135,6 +147,7 @@ export default function DoctorDashboard() {
         <Route index element={<DoctorOverview />} />
         <Route path="appointments" element={<DoctorAppointments />} />
         <Route path="patients" element={<DoctorPatients />} />
+        <Route path="referrals" element={<DoctorReferrals />} />
         <Route path="schedule" element={<DoctorSchedule />} />
       </Routes>
     </DashboardLayout>

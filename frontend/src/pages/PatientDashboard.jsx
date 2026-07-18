@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import DashboardLayout from "../../components/DashboardLayout";
-import MetricCard from "../../components/MetricCard";
-import DataTable from "../../components/DataTable";
+import DashboardLayout from "../components/DashboardLayout";
+import MetricCard from "../components/MetricCard";
+import DataTable from "../components/DataTable";
 import PatientAppointments from "./PatientAppointments";
 import PatientPrescriptions from "./PatientPrescriptions";
-
+import PatientLabTests from "./PatientLabTests";
+import PatientReports from "./PatientReports";
+import PatientBilling from "./PatientBilling";
 
 const NAV_ITEMS = [
   { to: "/patient-dashboard", label: "Overview" },
   { to: "/patient-dashboard/appointments", label: "Appointments" },
   { to: "/patient-dashboard/prescriptions", label: "Prescriptions" },
+  { to: "/patient-dashboard/lab-tests", label: "Lab Tests" },
   { to: "/patient-dashboard/reports", label: "Reports" },
+  { to: "/patient-dashboard/billing", label: "Billing" },
 ];
 
 const METRICS = [
@@ -99,7 +103,9 @@ export default function PatientDashboard() {
         <Route index element={<PatientOverview />} />
         <Route path="appointments" element={<PatientAppointments />} />
         <Route path="prescriptions" element={<PatientPrescriptions />} />
-        <Route path="reports" element={<Placeholder label="Reports" />} />
+        <Route path="lab-tests" element={<PatientLabTests />} />
+        <Route path="reports" element={<PatientReports />} />
+        <Route path="billing" element={<PatientBilling />} />
       </Routes>
     </DashboardLayout>
   );
