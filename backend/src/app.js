@@ -9,7 +9,8 @@ import appointmentRoutes from "./routes/appointments.js";
 import doctorRoutes from "./routes/doctors.js";
 import prescriptionRoutes from "./routes/prescriptions.js";
 import labTestRoutes from "./routes/labTests.js";
-
+import medicineRoutes from "./routes/medicines.js";
+import pharmacyRoutes from "./routes/pharmacy.js";
 
 const app = express();
 
@@ -32,6 +33,8 @@ app.use("/api/v1/hms/appointments", appointmentRoutes);
 app.use("/api/v1/hms/doctors", doctorRoutes);
 app.use("/api/v1/hms/prescriptions", prescriptionRoutes);
 app.use("/api/v1/hms/lab-tests", labTestRoutes);
+app.use("/api/v1/hms/medicines", medicineRoutes);
+app.use("/api/v1/hms/pharmacy", pharmacyRoutes);
 
 
 app.get("/health", (_, res) => res.json({ status: "ok" }));

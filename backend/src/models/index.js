@@ -7,6 +7,8 @@ import DoctorAvailability from "./DoctorAvailability.js";
 import DoctorTimeOff from "./DoctorTimeOff.js";
 import Prescription from "./Prescription.js";
 import LabTest from "./LabTest.js";
+import Medicine from "./Medicine.js";
+import PharmacyTransaction from "./PharmacyTransaction.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -86,6 +88,29 @@ User.hasMany(LabTest, {
   onDelete: "CASCADE",
 });
 LabTest.belongsTo(User , {foreignKey: "doctor_id", as: "doctor"});
+
+// Pharmacy relationships
+Prescription.hasMany(PharmacyTransaction, {
+  foreignKey: "prescription_id",
+  as: "transactions",
+  onDelete: "CASCADE",
+});
+PharmacyTransaction.belongsTo(Prescription, { foreignKey: "prescription_id", as: "prescription" });
+
+Patient.hasMany(PharmacyTransaction, {
+  foreignKey: "patient_id",
+  as: "pharmacyTransactions",
+  onDelete: "CASCADE",
+});
+PharmacyTransaction.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+
+User.hasMany(PharmacyTransaction, {
+  foreignKey: "pharmacist_id",
+  as: "dispensedTransactions",
+  onDelete: "CASCADE",
+});
+PharmacyTransaction.belongsTo(User, { foreignKey: "pharmacist_id", as: "pharmacist" });
+
 export {
   sequelize,
   User,
@@ -96,4 +121,6 @@ export {
   DoctorTimeOff,
   Prescription,
   LabTest,
+  Medicine,
+  PharmacyTransaction,
 };
