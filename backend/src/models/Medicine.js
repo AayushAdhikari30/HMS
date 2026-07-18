@@ -66,6 +66,10 @@ const Medicine = sequelize.define(
       type: DataTypes.STRING(100),
       allowNull: true,
     },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     expiry_date: {
       type: DataTypes.DATEONLY,
       allowNull: true,

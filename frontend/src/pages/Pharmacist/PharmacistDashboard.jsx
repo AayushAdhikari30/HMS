@@ -211,50 +211,101 @@ const PharmacistOverview = () => {
   );
 };
 
-// ── Inventory (searchable table) ─────────────────────────────────────
-const InventoryRow = ({ m, onAdjust }) => (
-  <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02]">
-    <td className="px-5 py-3 text-sm text-[#ddd] font-medium">
-      {m.name}
-      <div className="text-[10px] text-[#666] mt-0.5">{m.genericName}</div>
-    </td>
-    <td className="px-5 py-3 text-xs text-[#999]">
-      <div className="font-semibold text-green-500/90">{m.section}</div>
-      <div className="text-[#666] font-mono">{[m.aisle, m.shelf].filter(Boolean).join(" · ") || "—"}</div>
-    </td>
-    <td className="px-5 py-3 text-xs text-[#999]">
-      {m.form ?? "—"}
-      {m.strength ? <div className="text-[#666]">{m.strength}</div> : null}
-    </td>
-    <td className="px-5 py-3 text-sm text-[#ddd]">
-      {m.stock}
-      <div className="text-[10px] text-[#666]">threshold {m.reorderThreshold}</div>
-    </td>
-    <td className="px-5 py-3 text-sm text-[#ddd]">{formatMoney(m.unitPrice)}</td>
-    <td className="px-5 py-3">
-      {m.outOfStock ? (
-        <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-400">
-          Out
-        </span>
-      ) : m.lowStock ? (
-        <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400">
-          Low
-        </span>
-      ) : (
-        <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500">
-          OK
-        </span>
-      )}
-    </td>
-    <td className="px-5 py-3">
-      <button
-        onClick={() => onAdjust(m)}
-        className="border border-green-500/40 text-green-500 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-green-500 hover:text-black cursor-pointer whitespace-nowrap"
-      >
-        Adjust
-      </button>
-    </td>
-  </tr>
+// ── Inventory (searchable table with expandable rows) ────────────────
+const InventoryRow = ({ m, onAdjust, expanded, onToggle }) => (
+  <>
+    <tr
+      onClick={onToggle}
+      className={`border-b border-[#1a1a1a] hover:bg-white/[0.02] cursor-pointer ${
+        expanded ? "bg-white/[0.02]" : ""
+      }`}
+    >
+      <td className="px-5 py-3 text-sm text-[#ddd] font-medium">
+        <div className="flex items-center gap-2">
+          <span className={`text-[#666] text-[10px] transition-transform ${expanded ? "rotate-90" : ""}`}>▶</span>
+          <span>{m.name}</span>
+        </div>
+        <div className="text-[10px] text-[#666] mt-0.5 ml-4">{m.genericName}</div>
+      </td>
+      <td className="px-5 py-3 text-xs text-[#999]">
+        <div className="font-semibold text-green-500/90">{m.section}</div>
+        <div className="text-[#666] font-mono">{[m.aisle, m.shelf].filter(Boolean).join(" · ") || "—"}</div>
+      </td>
+      <td className="px-5 py-3 text-xs text-[#999]">
+        {m.form ?? "—"}
+        {m.strength ? <div className="text-[#666]">{m.strength}</div> : null}
+      </td>
+      <td className="px-5 py-3 text-sm text-[#ddd]">
+        {m.stock}
+        <div className="text-[10px] text-[#666]">threshold {m.reorderThreshold}</div>
+      </td>
+      <td className="px-5 py-3 text-sm text-[#ddd]">{formatMoney(m.unitPrice)}</td>
+      <td className="px-5 py-3">
+        {m.outOfStock ? (
+          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-400">
+            Out
+          </span>
+        ) : m.lowStock ? (
+          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400">
+            Low
+          </span>
+        ) : (
+          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500">
+            OK
+          </span>
+        )}
+      </td>
+      <td className="px-5 py-3">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAdjust(m);
+          }}
+          className="border border-green-500/40 text-green-500 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-green-500 hover:text-black cursor-pointer whitespace-nowrap"
+        >
+          Adjust
+        </button>
+      </td>
+    </tr>
+    {expanded && (
+      <tr className="border-b border-[#1a1a1a] bg-[#0d0d0d]">
+        <td colSpan={7} className="px-5 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr,240px] gap-6">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#666]">
+                Description
+              </span>
+              <p className="text-sm text-[#ccc] leading-relaxed">
+                {m.description || "No description on file."}
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 text-xs">
+              <div>
+                <span className="text-[#666]">Category: </span>
+                <span className="text-[#ccc]">{m.category}</span>
+              </div>
+              <div>
+                <span className="text-[#666]">Manufacturer: </span>
+                <span className="text-[#ccc]">{m.manufacturer ?? "—"}</span>
+              </div>
+              <div>
+                <span className="text-[#666]">Prescription: </span>
+                <span className={m.requiresPrescription ? "text-amber-400" : "text-green-500"}>
+                  {m.requiresPrescription ? "Required (Rx)" : "OTC"}
+                </span>
+              </div>
+              {m.expiryDate && (
+                <div>
+                  <span className="text-[#666]">Expires: </span>
+                  <span className="text-[#ccc]">{m.expiryDate}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </td>
+      </tr>
+    )}
+  </>
 );
 
 const InventoryPage = () => {
@@ -262,6 +313,7 @@ const InventoryPage = () => {
   const [search, setSearch] = useState("");
   const [showLowOnly, setShowLowOnly] = useState(false);
   const [adjusting, setAdjusting] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
 
   const filtered = useMemo(() => {
     let list = medicines;
@@ -336,7 +388,16 @@ const InventoryPage = () => {
                 </td>
               </tr>
             )}
-            {!loading && filtered.map((m) => <InventoryRow key={m.id} m={m} onAdjust={setAdjusting} />)}
+            {!loading &&
+              filtered.map((m) => (
+                <InventoryRow
+                  key={m.id}
+                  m={m}
+                  onAdjust={setAdjusting}
+                  expanded={expandedId === m.id}
+                  onToggle={() => setExpandedId((prev) => (prev === m.id ? null : m.id))}
+                />
+              ))}
           </tbody>
         </table>
       </div>
@@ -366,7 +427,8 @@ const LocatePage = () => {
         q &&
         !m.name.toLowerCase().includes(q) &&
         !m.genericName.toLowerCase().includes(q) &&
-        !m.section.toLowerCase().includes(q)
+        !m.section.toLowerCase().includes(q) &&
+        !(m.description ?? "").toLowerCase().includes(q)
       ) {
         continue;
       }
@@ -434,10 +496,15 @@ const LocatePage = () => {
               </thead>
               <tbody>
                 {items.map((m) => (
-                  <tr key={m.id} className="border-b border-[#1a1a1a] last:border-none">
+                  <tr key={m.id} className="border-b border-[#1a1a1a] last:border-none align-top">
                     <td className="px-5 py-3 text-sm text-[#ddd]">
                       <div className="font-medium">{m.name}</div>
                       <div className="text-[10px] text-[#666]">{m.genericName}</div>
+                      {m.description && (
+                        <div className="text-[11px] text-[#888] mt-1 leading-snug max-w-md">
+                          {m.description}
+                        </div>
+                      )}
                     </td>
                     <td className="px-5 py-3 text-sm font-mono text-green-500/90">
                       {[m.aisle, m.shelf].filter(Boolean).join(" · ") || "—"}

@@ -19,6 +19,7 @@ const serialize = (m) => ({
   lowStock: m.stock <= m.reorder_threshold,
   outOfStock: m.stock === 0,
   manufacturer: m.manufacturer,
+  description: m.description,
   expiryDate: m.expiry_date,
   requiresPrescription: m.requires_prescription,
 });
