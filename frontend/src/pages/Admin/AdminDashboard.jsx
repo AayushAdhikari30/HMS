@@ -3,31 +3,11 @@ import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import MetricCard from "../../components/MetricCard";
 import AddStaffForm from "../../components/AddStaffForm";
-import RoomManagement from "./RoomManagement";
 import api from "../../api/axios";
 
 const NAV_ITEMS = [
   { to: "/admin-dashboard", icon: "", label: "Overview" },
   { to: "/admin-dashboard/users", icon: "", label: "User Management" },
-  { to: "/admin-dashboard/rooms", icon: "", label: "Room Management" },
-  { to: "/admin-dashboard/billing", icon: "", label: "Billing" },
-  { to: "/admin-dashboard/reports", icon: "", label: "Reports" },
-];
-
-const STATS = [
-  { label: "Total Patients", value: "1,248", sub: "+12 this week", accent: true },
-  { label: "Active Doctors", value: "34", sub: "6 on leave" },
-  { label: "Rooms Available", value: "18", sub: "of 52 total" },
-  { label: "Pending Admissions", value: "7", sub: "Awaiting assignment" },
-];
-
-
-const MOCK_USERS = [
-  { id: "u1", identifier: "DOC-2026-0001", name: "DOC-2026-0001", role: "doctor", department: "—", status: "Active", is_active: true },
-  { id: "u2", identifier: "sanjay.gurung@example.com", name: "Sanjay Gurung", role: "patient", department: "—", status: "Active", is_active: true },
-  { id: "u3", identifier: "DOC-2026-0002", name: "DOC-2026-0002", role: "doctor", department: "—", status: "On Leave", is_active: false },
-  { id: "u4", identifier: "anita.sharma@example.com", name: "Anita Sharma", role: "patient", department: "—", status: "Active", is_active: true },
-  { id: "u5", identifier: "ADM-2026-0001", name: "ADM-2026-0001", role: "admin", department: "—", status: "Active", is_active: true },
 ];
 
 const ROLE_FILTERS = ["All", "doctor", "patient", "admin", "pharmacist", "lab_assistant"];
@@ -46,7 +26,6 @@ const Placeholder = ({ label }) => (
   </div>
 );
 
-// --- Sub-component: UserRow ---
 const UserRow = ({ user, onToggle, onDelete }) => (
   <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
     <td className="px-5 py-3.5 text-sm align-middle">
@@ -151,7 +130,13 @@ const UserManagementConsole = ({ users, onToggle, onDelete, activeFilter, onFilt
 };
 
 const AdminOverview = () => {
-  const [users, setUsers] = useState(MOCK_USERS);
+  const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState([
+    { label: "Total Patients", value: "0", sub: "Registered users", accent: true },
+    { label: "Active Doctors", value: "0", sub: "Available staff" },
+    { label: "Active Sessions", value: "0", sub: "Current users" },
+    { label: "Total Users", value: "0", sub: "Across all roles" },
+  ]);
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
 
@@ -161,10 +146,23 @@ const AdminOverview = () => {
       try {
         const res = await api.get("/users");
         if (!cancelled && res.data?.success) {
-          setUsers(res.data.users);
+          const allUsers = res.data.users;
+          setUsers(allUsers);
+          
+          // Calculate stats
+          const patients = allUsers.filter((u) => u.role === "patient").length;
+          const doctors = allUsers.filter((u) => u.role === "doctor").length;
+          const active = allUsers.filter((u) => u.is_active).length;
+          
+          setStats([
+            { label: "Total Patients", value: patients.toString(), sub: "Registered users", accent: true },
+            { label: "Active Doctors", value: doctors.toString(), sub: "Available staff" },
+            { label: "Active Users", value: active.toString(), sub: "Currently active" },
+            { label: "Total Users", value: allUsers.length.toString(), sub: "Across all roles" },
+          ]);
         }
       } catch (err) {
-        console.warn("[AdminOverview] Falling back to mock data:", err.message);
+        console.warn("[AdminOverview] Fetch failed:", err.message);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -203,7 +201,7 @@ const AdminOverview = () => {
       <section className="flex flex-col gap-4">
         <h2 className="text-base font-semibold text-white tracking-tight">Hospital Statistics</h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-          {STATS.map((s) => (
+          {stats.map((s) => (
             <MetricCard key={s.label} {...s} />
           ))}
         </div>
@@ -234,7 +232,7 @@ const UserManagementPage = () => {
       if (res.data?.success) setUsers(res.data.users);
     } catch (err) {
       console.warn("[UserManagementPage] fetch failed:", err.message);
-      setUsers(MOCK_USERS);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -285,14 +283,12 @@ const UserManagementPage = () => {
   );
 };
 
-// --- AdminDashboard Router ---
 export default function AdminDashboard() {
   return (
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Admin Console">
       <Routes>
         <Route index element={<AdminOverview />} />
         <Route path="users" element={<UserManagementPage />} />
-        <Route path="rooms" element={<RoomManagement />} />
         <Route path="billing" element={<Placeholder label="Billing" />} />
         <Route path="reports" element={<Placeholder label="Reports" />} />
       </Routes>

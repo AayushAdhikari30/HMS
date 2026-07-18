@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import MetricCard from "../../components/MetricCard";
 import DataTable from "../../components/DataTable";
+import api from "../../api/axios";
 import PatientAppointments from "./PatientAppointments";
 import PatientPrescriptions from "./PatientPrescriptions";
 
@@ -14,24 +15,11 @@ const NAV_ITEMS = [
   { to: "/patient-dashboard/reports", label: "Reports" },
 ];
 
-const METRICS = [
-  { label: "Next Appointment", value: "Jun 18", sub: "Dr. Ramesh Karki · Cardiology", accent: true },
-  { label: "Active Prescriptions", value: "3", sub: "Last updated Jun 10" },
-  { label: "Pending Reports", value: "2", sub: "Awaiting lab results" },
-];
-
 const CHECKUP_COLUMNS = [
   { key: "date", label: "Date" },
   { key: "doctor", label: "Doctor" },
   { key: "department", label: "Department" },
   { key: "status", label: "Status", type: "status" },
-];
-
-const CHECKUP_DATA = [
-  { id: 1, date: "Jun 05, 2026", doctor: "Dr. Ramesh Karki", department: "Cardiology", status: "Completed" },
-  { id: 2, date: "May 22, 2026", doctor: "Dr. Sita Thapa", department: "General Medicine", status: "Completed" },
-  { id: 3, date: "May 10, 2026", doctor: "Dr. Bikash Rai", department: "Neurology", status: "Completed" },
-  { id: 4, date: "Apr 30, 2026", doctor: "Dr. Puja Shrestha", department: "Dermatology", status: "Cancelled" },
 ];
 
 const Placeholder = ({ label }) => (
@@ -41,14 +29,81 @@ const Placeholder = ({ label }) => (
 );
 
 const PatientOverview = () => {
+  const [metrics, setMetrics] = useState([
+    { label: "Next Appointment", value: "—", sub: "None scheduled", accent: true },
+    { label: "Active Prescriptions", value: "0", sub: "Currently active" },
+    { label: "Lab Tests", value: "0", sub: "Pending results" },
+  ]);
+  const [appointments, setAppointments] = useState([]);
   const [selectedCheckup, setSelectedCheckup] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch appointments
+        const apptRes = await api.get("/appointments");
+        if (apptRes.data?.success) {
+          const appts = apptRes.data.appointments.map((appt) => ({
+            id: appt.id,
+            date: new Date(appt.appointmentDate).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+            doctor: appt.doctor?.staffProfile?.fullname || appt.doctor?.identifier || "Unknown",
+            department: appt.doctor?.staffProfile?.department || "—",
+            status: appt.status,
+          }));
+          setAppointments(appts);
+
+          // Find next appointment
+          const nextAppt = appts.find((a) => a.status !== "cancelled");
+          const nextLabel = nextAppt
+            ? `${nextAppt.date} · ${nextAppt.doctor}`
+            : "None scheduled";
+
+          // Fetch prescriptions count
+          const rxRes = await api.get("/prescriptions");
+          const rxCount = rxRes.data?.success ? rxRes.data.prescriptions.length : 0;
+
+          // Fetch lab tests count
+          const labRes = await api.get("/lab-tests");
+          const labCount = labRes.data?.success
+            ? labRes.data.tests.filter((t) => t.status !== "completed").length
+            : 0;
+
+          setMetrics([
+            {
+              label: "Next Appointment",
+              value: nextAppt?.date || "—",
+              sub: nextLabel,
+              accent: true,
+            },
+            {
+              label: "Active Prescriptions",
+              value: rxCount.toString(),
+              sub: "Currently active",
+            },
+            { label: "Lab Tests", value: labCount.toString(), sub: "Pending results" },
+          ]);
+        }
+      } catch (err) {
+        console.warn("[PatientOverview] fetch failed:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-4">
         <h2 className="text-base font-semibold text-white tracking-tight">Your Health at a Glance</h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-          {METRICS.map((m) => (
+          {metrics.map((m) => (
             <MetricCard key={m.label} {...m} />
           ))}
         </div>
@@ -67,24 +122,32 @@ const PatientOverview = () => {
           )}
         </div>
 
-        <DataTable columns={CHECKUP_COLUMNS} rows={CHECKUP_DATA} onRowAction={setSelectedCheckup} />
+        {loading ? (
+          <div className="text-center text-[#666] py-8">Loading appointments...</div>
+        ) : appointments.length === 0 ? (
+          <div className="text-center text-[#666] py-8">No appointments found</div>
+        ) : (
+          <>
+            <DataTable columns={CHECKUP_COLUMNS} rows={appointments} onRowAction={setSelectedCheckup} />
 
-        {selectedCheckup && (
-          <div className="bg-[#111111] border-l-4 border-green-500 rounded-r-lg px-6 py-5 flex flex-col gap-1.5 text-sm text-[#ccc]">
-            <h3 className="text-sm font-bold text-white mb-1">Checkup Detail</h3>
-            <p>
-              <span className="font-semibold text-white">Date:</span> {selectedCheckup.date}
-            </p>
-            <p>
-              <span className="font-semibold text-white">Doctor:</span> {selectedCheckup.doctor}
-            </p>
-            <p>
-              <span className="font-semibold text-white">Department:</span> {selectedCheckup.department}
-            </p>
-            <p>
-              <span className="font-semibold text-white">Status:</span> {selectedCheckup.status}
-            </p>
-          </div>
+            {selectedCheckup && (
+              <div className="bg-[#111111] border-l-4 border-green-500 rounded-r-lg px-6 py-5 flex flex-col gap-1.5 text-sm text-[#ccc]">
+                <h3 className="text-sm font-bold text-white mb-1">Checkup Detail</h3>
+                <p>
+                  <span className="font-semibold text-white">Date:</span> {selectedCheckup.date}
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Doctor:</span> {selectedCheckup.doctor}
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Department:</span> {selectedCheckup.department}
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Status:</span> {selectedCheckup.status}
+                </p>
+              </div>
+            )}
+          </>
         )}
       </section>
     </div>
