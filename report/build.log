@@ -1,0 +1,386 @@
+﻿This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex.fmt)
+ restricted \write18 enabled.
+entering extended mode
+(HospitalManagementSystem.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-24>
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
+Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/base\size12.clo))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\lmodern.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.c
+fg)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/enumitem\enumitem.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
+) (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg))
+==> First Aid for listings.sty no longer applied!
+    Expected:
+        2024/09/23 1.10c (Carsten Heinz)
+    but found:
+        2025/11/14 1.11b (Carsten Heinz)
+    so I'm assuming it got fixed.
+
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/algorithms\algorithm.st
+y (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/algorithmicx\algpseudoc
+ode.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/algorithmicx\algorithmi
+cx.sty
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz.
+sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfrcs.st
+y
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil
+-common.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil
+-latex.def)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfrcs.
+code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf\pgf.revision.tex)
+))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgfcore.
+sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/systemlayer\pgfsys.
+sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s.code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+.code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+libraryfiltered.code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.c
+fg)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s-pdftex.def
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s-common-pdf.def)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+ssoftpath.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+sprotocol.code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+e.code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code
+.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathutil.
+code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathparse
+r.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.basic.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.trigonometric.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.random.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.comparison.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.base.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.round.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.misc.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.integerarithmetics.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathcalc.
+code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfloat
+.code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfint.code.
+tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epoints.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathconstruct.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathusage.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+escopes.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+egraphicstate.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+etransformations.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+equick.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eobjects.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathprocessing.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+earrows.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eshade.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eimage.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eexternal.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+elayers.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+etransparency.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epatterns.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+erdf.code.tex)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+shapes.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+plot.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfco
+mp-version-0-65.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfco
+mp-version-1-18.sty))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgffor.st
+y
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfkeys.s
+ty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+.code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/math\pgfmath.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code
+.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgffor.
+code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z\tikz.code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibr
+aryplothandlers.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+matrix.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarytopaths.code.tex)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgfgantt\pgfgantt.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryarrows.code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibr
+aryarrows.code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarybackgrounds.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarycalc.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarypatterns.code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibr
+arypatterns.code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarypositioning.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.geometric.code.tex
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.geometric.code.tex))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfcalend
+ar.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfcale
+ndar.code.tex)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/caption\ltcaption.sty))
+ (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty
+)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefine
+keys.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.s
+ty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds
+.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.s
+ty)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gettit
+lestring.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
+)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.s
+ty) (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
+) (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
+) (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc
+.sty)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfil
+echeck.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniquec
+ounter.sty)))
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibr
+aryarrows.meta.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryfit.code.tex)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmr.fd)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
+tex.def) (HospitalManagementSystem.aux)
+Runaway argument?
+{\contentsline {figure}{\numberline {3.3}{\ignorespaces En 
+! File ended while scanning use of \@writefile.
+<inserted text> 
+                \par 
+l.80 \begin{document}
+                     
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
+ii
+[Loading MPS to PDF converter (version 2006.09.02).]
+)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
+ase.sty
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
+fg)) (HospitalManagementSystem.out)
+Runaway argument?
+{\376\377\000T\000o\000o\00 
+! File ended while scanning use of \@@BOOKMARK.
+<inserted text> 
+                \par 
+l.80 \begin{document}
+                     
+(HospitalManagementSystem.out)
+Runaway argument?
+{\376\377\000T\000o\000o\00 
+! File ended while scanning use of \@@BOOKMARK.
+<inserted text> 
+                \par 
+l.80 \begin{document}
+                     
+[1{C:/Users/Nitro/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/Ni
+tro/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./pica/logo.pn
+g>] [1] [2] [3] (HospitalManagementSystem.toc) [4]
+(HospitalManagementSystem.lof) [5] (HospitalManagementSystem.lot) [6]
+Chapter 1.
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.252 
+       [1] (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
+) [2{C:/Users/Nitro/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc
+}] [3]
+Chapter 2.
+[4] [5] [6]
+Chapter 3.
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd) [7]
+[8] [9] [10]
+Overfull \hbox (4.95064pt too wide) in paragraph at lines 559--564
+[]\T1/lmr/bx/n/12 Controllers: \T1/lmtt/m/n/12 authController\T1/lmr/m/n/12 , \
+T1/lmtt/m/n/12 appointmentController\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 availabili
+tyController\T1/lmr/m/n/12 ,
+
+Overfull \hbox (17.40451pt too wide) in paragraph at lines 559--564
+\T1/lmtt/m/n/12 prescriptionController\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 labContr
+oller\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 referralController\T1/lmr/m/n/12 , \T1/lm
+tt/m/n/12 invoiceController\T1/lmr/m/n/12 ,
+
+Overfull \hbox (36.20782pt too wide) in paragraph at lines 568--571
+[]\T1/lmr/bx/n/12 Services: \T1/lmtt/m/n/12 tokenService\T1/lmr/m/n/12 , \T1/lm
+tt/m/n/12 contactService\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 notificationService\T1
+/lmr/m/n/12 , \T1/lmtt/m/n/12 availabilityService\T1/lmr/m/n/12 ,
+
+Overfull \hbox (6.39288pt too wide) in paragraph at lines 573--578
+\T1/lmr/m/n/12 point-ments, avail-abil-ity, pre-scrip-tions, lab tests, re-fer-
+rals, in-voices, no-ti-fi-ca-tions, medicines,
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd)
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd) [11]
+[12{C:/Users/Nitro/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.e
+nc}] [13]
+
+LaTeX Warning: Reference `fig:flow-appt' on page 14 undefined on input line 800
+.
+
+[14] [15] [16]
+
+LaTeX Warning: Reference `fig:flow-auth' on page 17 undefined on input line 833
+.
+
+[17] [18] [19]
+Chapter 4.
+[20 <./pica/log.png>]
+Overfull \hbox (83.40025pt too wide) in paragraph at lines 915--918
+\T1/lmr/m/n/12 avail-abil-ity, with con-flict check-ing; ap-point-ments move th
+rough a pend-ing/confirmed/cancelled/completed
+[21 <./pica/patient.png>] [22 <./pica/doctor.png> <./pica/admin.png>] [23 <./pi
+ca/lab.png>] [24 <./pica/pharm.png>] [25]
+Chapter 5.
+[26] [27] [28]
+(C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty)
+[29]
+Overfull \hbox (0.57301pt too wide) in paragraph at lines 1134--1136
+\T1/lmr/m/n/12 Example en-vi-ron-ment vari-ables (\T1/lmtt/m/n/12 .env\T1/lmr/m
+/n/12 ) stor-ing sen-si-tive con-fig-u-ra-tion such as the database
+[30]
+
+LaTeX Warning: Reference `fig:gantt' on page 31 undefined on input line 1162.
+
+[31] (HospitalManagementSystem.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `HospitalManagementSystem.out' has changed
+.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)<C:/Users/Nitro/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/Nitro/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/Nitro/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/Nitro/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/Nitro/AppData/Local
+/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/Nitro/AppData/Local/P
+rograms/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/Nitro/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Users/Nitro/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/Nitro/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Users/Nitro/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Users/Nitro/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
+Output written on HospitalManagementSystem.pdf (38 pages, 2656603 bytes).
+Transcript written on HospitalManagementSystem.log.
+pdflatex.exe : pdflatex: major issue: So far, you have not checked for MiKTeX updates.
+At line:3 char:1
++ & "$bin\pdflatex.exe" -interaction=nonstopmode HospitalManagementSyst ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (pdflatex: major...MiKTeX updates.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

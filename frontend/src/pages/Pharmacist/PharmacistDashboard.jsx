@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { to: "/pharmacist-dashboard/prescriptions", label: "Prescriptions" },
 ];
 
-const formatMoney = (n) => `$${Number(n ?? 0).toFixed(2)}`;
+const formatMoney = (n) => `Rs ${Number(n ?? 0).toFixed(2)}`;
 
 // ── Stock adjust modal ──────────────────────────────────────────────
 const AdjustStockModal = ({ medicine, onClose, onSaved }) => {

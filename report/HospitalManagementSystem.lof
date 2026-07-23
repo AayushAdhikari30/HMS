@@ -1,0 +1,17 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Use Case Diagram of the Hospital Management System}}{10}{figure.caption.8}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Client--Server Layered Architecture of the Hospital Management System}}{12}{figure.caption.13}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Entity--Relationship overview (principal entities and relationships)}}{13}{figure.caption.14}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Appointment Booking Flowchart}}{18}{figure.caption.20}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces User Authentication Flowchart}}{19}{figure.caption.22}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Login page --- role-aware, secure sign-in}}{20}{figure.caption.25}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Patient dashboard}}{21}{figure.caption.28}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Doctor dashboard}}{22}{figure.caption.29}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Admin dashboard}}{22}{figure.caption.30}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Lab Assistant portal --- test-request queue and results}}{23}{figure.caption.33}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Pharmacist portal --- location-aware medicine inventory}}{24}{figure.caption.35}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1}{\ignorespaces Eight-Week Project Timeline --- Major Phases}}{31}{figure.caption.40}%

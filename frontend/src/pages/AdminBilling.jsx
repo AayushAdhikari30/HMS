@@ -9,7 +9,7 @@ const STATUS_STYLES = {
   cancelled: "bg-red-500/10 text-red-400",
 };
 
-const formatMoney = (n) => `$${Number(n ?? 0).toFixed(2)}`;
+const formatMoney = (n) => `Rs ${Number(n ?? 0).toFixed(2)}`;
 const formatDate = (iso) =>
   iso
     ? new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })

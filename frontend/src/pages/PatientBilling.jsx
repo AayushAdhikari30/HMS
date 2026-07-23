@@ -15,7 +15,7 @@ const PAYMENT_METHODS = [
   { value: "online", label: "Online" },
 ];
 
-const formatMoney = (n) => `$${Number(n ?? 0).toFixed(2)}`;
+const formatMoney = (n) => `Rs ${Number(n ?? 0).toFixed(2)}`;
 const formatDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "—";
 
