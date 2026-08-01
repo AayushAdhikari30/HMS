@@ -33,6 +33,20 @@ const ResultPanel = ({ test }) => (
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#666] mb-1.5">Result</p>
             <p className="text-sm text-[#ddd] whitespace-pre-wrap">{test.result}</p>
           </div>
+          {test.imageUrl && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#666] mb-1.5">
+                Attached Image
+              </p>
+              <a href={test.imageUrl} target="_blank" rel="noreferrer">
+                <img
+                  src={test.imageUrl}
+                  alt={`${test.testName} result`}
+                  className="max-w-sm rounded-lg border border-[#1a1a1a] hover:border-green-500/50 transition-colors duration-150"
+                />
+              </a>
+            </div>
+          )}
           {test.notes && (
             <p className="text-sm text-[#999]">
               <span className="text-[#666] font-semibold">Notes: </span>

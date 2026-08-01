@@ -4,12 +4,15 @@ import { ROLES, HTTP, LAB_TEST_STATUS, LAB_TEST_STATUS_LIST, NOTIFICATION_TYPE }
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
 
+// Served through nginx's /uploads/ proxy, same origin as everything else —
+// see the note in profileController/notificationService about relative URLs.
 const serializeLabTest = (test) => ({
   id: test.id,
   testName: test.test_name,
   status: test.status,
   result: test.result,
   notes: test.notes,
+  imageUrl: test.image_path ? `/uploads/${test.image_path}` : null,
   completedAt: test.completed_at,
   patient: test.patient ? { id: test.patient.id, name: test.patient.fullname } : undefined,
   labAssistant: test.labAssistant
@@ -223,6 +226,46 @@ export const cancelLabTest = async (req, res) => {
     return res.status(HTTP.OK).json({ success: true, message: "Lab test request cancelled" });
   } catch (err) {
     console.error("[labs/cancel]", err);
+    return res.status(HTTP.INTERNAL).json({ message: "Server error" });
+  }
+};
+
+// POST /labs/:id/image — attach a result image (X-ray, scan, report photo).
+// Runs after multer has already written the file to disk; this just records
+// the path against the test and notifies the patient it's viewable.
+export const uploadLabTestImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(HTTP.BAD_REQUEST).json({ message: "No image file was uploaded" });
+    }
+
+    const labTest = await LabTest.findByPk(req.params.id);
+    if (!labTest) {
+      return res.status(HTTP.NOT_FOUND).json({ message: "Lab test not found" });
+    }
+
+    await labTest.update({
+      image_path: `labs/${req.file.filename}`,
+      lab_assistant_id: labTest.lab_assistant_id || req.user.id,
+    });
+
+    const patient = await Patient.findByPk(labTest.patient_id);
+    if (patient?.user_id) {
+      notify({
+        userId: patient.user_id,
+        type: NOTIFICATION_TYPE.LAB_TEST,
+        title: "Lab result image added",
+        body: `An image was attached to your "${labTest.test_name}" result.`,
+        link: "/patient-dashboard/lab-tests",
+      });
+    }
+
+    return res.status(HTTP.OK).json({
+      success: true,
+      imageUrl: `/uploads/${labTest.image_path}`,
+    });
+  } catch (err) {
+    console.error("[labs/upload-image]", err);
     return res.status(HTTP.INTERNAL).json({ message: "Server error" });
   }
 };

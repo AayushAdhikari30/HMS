@@ -43,6 +43,12 @@ const LabTest = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    // Relative path under the uploads volume, e.g. "labs/<uuid>.jpg" — an
+    // X-ray, scan, or photographed report attached to the result.
+    image_path: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
   },
   {
     tableName: "lab_tests",

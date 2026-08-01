@@ -183,7 +183,19 @@ const useLabTests = () => {
     }
   };
 
-  return { tests, loading, refetch: fetchTests, updateStatus };
+  const uploadImage = async (id, file) => {
+    const form = new FormData();
+    form.append("image", file);
+    // No Content-Type header here on purpose — the browser sets it (with the
+    // multipart boundary) automatically when the body is a FormData object.
+    const res = await api.post(`/labs/${id}/image`, form);
+    if (res.data?.success) {
+      setTests((prev) => prev.map((t) => (t.id === id ? { ...t, imageUrl: res.data.imageUrl } : t)));
+    }
+    return res.data?.imageUrl;
+  };
+
+  return { tests, loading, refetch: fetchTests, updateStatus, uploadImage };
 };
 
 // ---------- Pages ----------
@@ -347,9 +359,53 @@ const LabQueue = () => {
   );
 };
 
+// ---------- Result image upload ----------
+const ImageUpload = ({ test, onUpload }) => {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+
+    setError("");
+    setUploading(true);
+    try {
+      await onUpload(test.id, file);
+    } catch (err) {
+      setError(err.response?.data?.message || "Could not upload image.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="font-semibold text-white mb-1">Result Image</p>
+      {test.imageUrl ? (
+        <a href={test.imageUrl} target="_blank" rel="noreferrer">
+          <img
+            src={test.imageUrl}
+            alt={`${test.testName} result`}
+            className="max-w-xs rounded-lg border border-[#2a2a2a] hover:border-green-500/50 transition-colors"
+          />
+        </a>
+      ) : (
+        <p className="text-[#666] text-xs">No image attached yet.</p>
+      )}
+      <label className="self-start border border-[#2a2a2a] text-[#999] rounded-lg px-3.5 py-2 text-xs font-semibold hover:border-green-500/40 hover:text-green-500 cursor-pointer transition-colors">
+        {uploading ? "Uploading…" : test.imageUrl ? "Replace image" : "Upload image"}
+        <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFile} disabled={uploading} className="hidden" />
+      </label>
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+};
+
 const LabCompleted = () => {
-  const { tests, loading } = useLabTests();
-  const [selected, setSelected] = useState(null);
+  const { tests, loading, uploadImage } = useLabTests();
+  const [selectedId, setSelectedId] = useState(null);
 
   const completed = useMemo(
     () =>
@@ -358,6 +414,10 @@ const LabCompleted = () => {
         .sort((a, b) => new Date(b.completedAt ?? 0) - new Date(a.completedAt ?? 0)),
     [tests],
   );
+
+  // Derived from `tests`, not a separate snapshot, so an image upload (which
+  // updates `tests`) is reflected here immediately without a second sync.
+  const selected = selectedId ? tests.find((t) => t.id === selectedId) : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -403,7 +463,7 @@ const LabCompleted = () => {
               completed.map((t) => (
                 <tr
                   key={t.id}
-                  onClick={() => setSelected(t)}
+                  onClick={() => setSelectedId(t.id)}
                   className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] cursor-pointer"
                 >
                   <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{t.testName}</td>
@@ -421,7 +481,7 @@ const LabCompleted = () => {
           <div className="flex items-start justify-between gap-3">
             <h3 className="text-sm font-bold text-white">{selected.testName}</h3>
             <button
-              onClick={() => setSelected(null)}
+              onClick={() => setSelectedId(null)}
               className="text-xs text-[#666] hover:text-white cursor-pointer"
             >
               Close
@@ -437,6 +497,7 @@ const LabCompleted = () => {
             <p className="font-semibold text-white mb-1">Result</p>
             <p className="whitespace-pre-wrap text-[#bbb]">{selected.result || "—"}</p>
           </div>
+          <ImageUpload test={selected} onUpload={uploadImage} />
           {selected.notes && (
             <div>
               <p className="font-semibold text-white mb-1">Notes</p>

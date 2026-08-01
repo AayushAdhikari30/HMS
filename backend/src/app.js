@@ -1,3 +1,4 @@
+import path from "path";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -13,6 +14,7 @@ import referralRoutes from "./routes/referrals.js";
 import invoiceRoutes from "./routes/invoices.js";
 import notificationRoutes from "./routes/notifications.js";
 import medicineRoutes from "./routes/medicines.js";
+import profileRoutes from "./routes/profile.js";
 
 const app = express();
 
@@ -32,6 +34,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Uploaded lab-result images. In Docker this directory is a mounted volume
+// (see docker-compose.yml) so files survive container rebuilds.
+app.use("/uploads", express.static(process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads")));
+
 // Routes
 app.use("/api/v1/hms", authRoutes);
 app.use("/api/v1/hms/users", userRoutes);
@@ -44,6 +50,7 @@ app.use("/api/v1/hms/referrals", referralRoutes);
 app.use("/api/v1/hms/invoices", invoiceRoutes);
 app.use("/api/v1/hms/notifications", notificationRoutes);
 app.use("/api/v1/hms/medicines", medicineRoutes);
+app.use("/api/v1/hms/profile", profileRoutes);
 
 app.get("/health", (_, res) => res.json({ status: "ok" }));
 
