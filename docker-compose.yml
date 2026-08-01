@@ -1,0 +1,68 @@
+# Hospital Management System — full stack in Docker.
+# Run on ONE PC (the "server"); other PCs connect via a browser to
+#   http://<this-pc-LAN-ip>/
+#
+#   docker compose up -d --build          # build + start everything
+#   docker compose exec backend npm run seed:medicines   # load medicines (once)
+#   docker compose logs -f backend        # watch backend logs
+#   docker compose down                   # stop (data is kept in the volume)
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      # NOTE: 'development' keeps auth cookies working over plain HTTP on a LAN
+      # (in 'production' the cookie is marked Secure and needs HTTPS).
+      NODE_ENV: development
+      PORT: 8000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      CLIENT_URL: ${CLIENT_URL}
+      # Optional email (leave blank to log to console instead of sending):
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM}
+    volumes:
+      # Uploaded lab-result images live here — without this mount they'd be
+      # wiped out every time the backend image is rebuilt.
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api/v1/hms
+    ports:
+      - "80:80"          # clients reach the whole app here: http://<server-ip>/
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  uploads_data:

@@ -1,0 +1,27 @@
+# Root-level env file used by docker-compose (holds real secrets — never commit)
+.env
+!.env.docker.example
+
+# LaTeX build artifacts (keep the .tex source and the final .pdf, drop the rest)
+report/*.aux
+report/*.log
+report/*.lof
+report/*.lot
+report/*.out
+report/*.toc
+report/*.synctex.gz
+report/*.log
+report/b1.log
+report/b2.log
+report/build.log
+report/build2.log
+report/pass2.log
+report2.0/*.aux
+report2.0/*.log
+report2.0/*.lof
+report2.0/*.lot
+report2.0/*.out
+report2.0/*.toc
+report2.0/*.synctex.gz
+report2.0/p1.log
+report2.0/p2.log

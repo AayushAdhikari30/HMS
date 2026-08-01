@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationBell from "./NotificationBell";
+import ProfileModal from "./ProfileModal";
 
 const ROLE_LABELS = {
   patient: "Patient Portal",
@@ -28,24 +31,29 @@ const SidebarNavItem = ({ to, icon, label }) => (
       }`
     }
   >
-    <span className="text-base w-5 text-center shrink-0">{icon}</span>
+    <span className="text-base w-5 text-center flex-shrink-0">{icon}</span>
     <span className="whitespace-nowrap">{label}</span>
   </NavLink>
 );
 
-const TopNavbar = ({ user, onLogout, pageTitle }) => (
+const TopNavbar = ({ user, onLogout, pageTitle, onOpenProfile }) => (
   <header className="flex items-center justify-between px-8 h-16 bg-[#0d0d0d] border-b border-[#1a1a1a] sticky top-0 z-10">
     <h1 className="text-base font-semibold text-white tracking-tight">{pageTitle}</h1>
     <div className="flex items-center gap-5">
-      <div className="flex items-center gap-2.5">
-        <span className="w-8 h-8 rounded-full bg-green-500 text-black text-xs font-bold flex items-center justify-center shrink-0">
+      <NotificationBell />
+      <button
+        onClick={onOpenProfile}
+        aria-label="Open profile settings"
+        className="flex items-center gap-2.5 rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-white/5 transition-colors duration-150 cursor-pointer"
+      >
+        <span className="w-8 h-8 rounded-full bg-green-500 text-black text-xs font-bold flex items-center justify-center flex-shrink-0">
           {user?.name?.[0]?.toUpperCase() ?? "U"}
         </span>
-        <div className="flex flex-col leading-tight">
+        <div className="flex flex-col leading-tight text-left">
           <span className="text-sm font-semibold text-white">{user?.name}</span>
           <span className="text-xs text-[#666] capitalize">{user?.role}</span>
         </div>
-      </div>
+      </button>
       <button
         onClick={onLogout}
         className="border border-[#2a2a2a] text-[#888] text-xs font-medium rounded-lg px-3.5 py-1.5 hover:border-[#444] hover:text-white transition-colors duration-150 cursor-pointer"
@@ -57,7 +65,7 @@ const TopNavbar = ({ user, onLogout, pageTitle }) => (
 );
 
 const Sidebar = ({ navItems, role }) => (
-  <aside className="w-60 shrink-0 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col py-6 sticky top-0 h-screen overflow-y-auto">
+  <aside className="w-60 flex-shrink-0 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col py-6 sticky top-0 h-screen overflow-y-auto">
     <div className="flex items-center gap-2 px-6 pb-1">
       <HospitalIcon />
       <span className="text-lg font-bold text-white tracking-tight">
@@ -78,6 +86,7 @@ const Sidebar = ({ navItems, role }) => (
 const DashboardLayout = ({ navItems, pageTitle, children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleLogout = async () => {
     logout();
@@ -88,9 +97,15 @@ const DashboardLayout = ({ navItems, pageTitle, children }) => {
     <div className="flex min-h-screen bg-[#0a0a0a]">
       <Sidebar navItems={navItems} role={user?.role} />
       <div className="flex-1 flex flex-col min-w-0">
-        <TopNavbar user={user} onLogout={handleLogout} pageTitle={pageTitle} />
+        <TopNavbar
+          user={user}
+          onLogout={handleLogout}
+          pageTitle={pageTitle}
+          onOpenProfile={() => setProfileOpen(true)}
+        />
         <main className="flex-1 p-8 overflow-y-auto">{children}</main>
       </div>
+      {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { User, Patient, StaffProfile, Appointment } from "../models/index.js";
 import { computeAvailableSlots } from "../services/availabilityService.js";
-import { ROLES, HTTP, APPOINTMENT_STATUS } from "../constants.js";
+import { notify } from "../services/notificationService.js";
+import { ROLES, HTTP, APPOINTMENT_STATUS, NOTIFICATION_TYPE } from "../constants.js";
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
 
@@ -30,6 +31,7 @@ const serializeAppointment = (appt) => ({
   createdAt: appt.createdAt,
 });
 
+// GET /appointments/doctors — any authenticated user can browse doctors to book with
 export const listDoctors = async (req, res) => {
   try {
     const { department } = req.query;
@@ -64,6 +66,7 @@ export const listDoctors = async (req, res) => {
   }
 };
 
+// POST /appointments — patient books an appointment
 export const createAppointment = async (req, res) => {
   try {
     const { doctorId, appointmentDate, startTime, reason } = req.body;
@@ -119,6 +122,14 @@ export const createAppointment = async (req, res) => {
       start_time: startTime,
       reason: reason || null,
       status: APPOINTMENT_STATUS.PENDING,
+    });
+
+    notify({
+      userId: doctorId,
+      type: NOTIFICATION_TYPE.APPOINTMENT,
+      title: "New appointment request",
+      body: `${patient.fullname} requested ${appointmentDate} at ${startTime}.`,
+      link: "/doctor-dashboard/appointments",
     });
 
     return res.status(HTTP.CREATED).json({
@@ -203,6 +214,23 @@ export const updateAppointmentStatus = async (req, res) => {
       notes: notes ?? appointment.notes,
       cancelled_by: status === APPOINTMENT_STATUS.CANCELLED ? req.user.role : appointment.cancelled_by,
     });
+
+    const patient = await Patient.findByPk(appointment.patient_id);
+    if (patient?.user_id) {
+      const titles = {
+        [APPOINTMENT_STATUS.CONFIRMED]: "Appointment confirmed",
+        [APPOINTMENT_STATUS.CANCELLED]: "Appointment cancelled",
+        [APPOINTMENT_STATUS.COMPLETED]: "Appointment completed",
+        [APPOINTMENT_STATUS.PENDING]: "Appointment reopened",
+      };
+      notify({
+        userId: patient.user_id,
+        type: NOTIFICATION_TYPE.APPOINTMENT,
+        title: titles[status] ?? "Appointment updated",
+        body: `Your ${appointment.appointment_date} ${appointment.start_time} appointment was updated.`,
+        link: "/patient-dashboard/appointments",
+      });
+    }
 
     return res.status(HTTP.OK).json({
       success: true,

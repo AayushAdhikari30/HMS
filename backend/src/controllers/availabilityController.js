@@ -5,6 +5,7 @@ import { HTTP, ROLES } from "../constants.js";
 const DAY_MIN = 0;
 const DAY_MAX = 6;
 
+// POST /doctors/availability — doctor adds a recurring weekly window
 export const setAvailability = async (req, res) => {
   try {
     const { dayOfWeek, startTime, endTime, slotDurationMinutes } = req.body;
@@ -55,6 +56,7 @@ export const listMyAvailability = async (req, res) => {
   }
 };
 
+// DELETE /doctors/availability/:id
 export const deleteAvailability = async (req, res) => {
   try {
     const availability = await DoctorAvailability.findOne({
@@ -71,6 +73,7 @@ export const deleteAvailability = async (req, res) => {
   }
 };
 
+// POST /doctors/time-off — doctor blocks a whole date
 export const addTimeOff = async (req, res) => {
   try {
     const { date, reason } = req.body;
@@ -96,6 +99,7 @@ export const addTimeOff = async (req, res) => {
   }
 };
 
+// GET /doctors/time-off — doctor's own days off
 export const listMyTimeOff = async (req, res) => {
   try {
     const timeOff = await DoctorTimeOff.findAll({
@@ -109,6 +113,7 @@ export const listMyTimeOff = async (req, res) => {
   }
 };
 
+// DELETE /doctors/time-off/:id
 export const deleteTimeOff = async (req, res) => {
   try {
     const timeOff = await DoctorTimeOff.findOne({
@@ -125,6 +130,7 @@ export const deleteTimeOff = async (req, res) => {
   }
 };
 
+// GET /doctors/:doctorId/slots?date=YYYY-MM-DD — any authenticated user (patients booking)
 export const getDoctorSlots = async (req, res) => {
   try {
     const { doctorId } = req.params;

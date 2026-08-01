@@ -9,19 +9,24 @@ const Medicine = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    // Brand/product name as printed on the box
     name: {
       type: DataTypes.STRING(150),
       allowNull: false,
     },
+    // Active ingredient — what a doctor writes on a prescription
     generic_name: {
       type: DataTypes.STRING(150),
       allowNull: false,
     },
+    // Therapeutic category, e.g. "Antibiotics", "Analgesics"
     category: {
       type: DataTypes.STRING(80),
       allowNull: false,
     },
-   
+    // Physical location in the pharmacy — a pharmacist reads this to find the box.
+    // "section" is the room/area (e.g. "Antibiotics Cabinet"),
+    // aisle + shelf pinpoint the exact spot.
     section: {
       type: DataTypes.STRING(80),
       allowNull: false,

@@ -15,6 +15,7 @@ const serializeUser = (user) => ({
   department: "—", // placeholder until Doctor/Staff profile models exist
   status: user.is_active ? "Active" : "On Leave",
   is_active: user.is_active,
+  patientId: user.patientProfile?.id ?? null,
   createdAt: user.createdAt,
 });
 

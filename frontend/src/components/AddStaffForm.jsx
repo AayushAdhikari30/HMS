@@ -37,6 +37,12 @@ const CreatedStaffBanner = ({ result, onDismiss }) => (
       ⚠ This password is shown only once. Copy it now and share it with{" "}
       {result.staff.name} directly — it cannot be viewed again.
     </p>
+    {result.welcomeEmailed && (
+      <p className="text-xs text-green-400">
+        ✓ A welcome email was sent to {result.staff.email} with their login ID and a link to
+        set their own password — you may not need to share the temporary one.
+      </p>
+    )}
   </div>
 );
 
@@ -44,6 +50,7 @@ const AddStaffForm = ({ onCreated }) => {
   const [form, setForm] = useState({
     fullName: "",
     role: "doctor",
+    email: "",
     phone: "",
     department: "",
     specialization: "",
@@ -69,7 +76,7 @@ const AddStaffForm = ({ onCreated }) => {
       const res = await api.post("/staff", form);
       if (res.data.success) {
         setResult(res.data);
-        setForm({ fullName: "", role: "doctor", phone: "", department: "", specialization: "" });
+        setForm({ fullName: "", role: "doctor", email: "", phone: "", department: "", specialization: "" });
         onCreated?.(res.data.staff);
       }
     } catch (err) {
@@ -106,6 +113,19 @@ const AddStaffForm = ({ onCreated }) => {
               <option key={r.value} value={r.value}>{r.label}</option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="email" className={labelClass}>Email (optional)</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="r.karki@hospital.org"
+            className={inputClass}
+          />
         </div>
 
         <div>

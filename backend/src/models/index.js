@@ -7,8 +7,11 @@ import DoctorAvailability from "./DoctorAvailability.js";
 import DoctorTimeOff from "./DoctorTimeOff.js";
 import Prescription from "./Prescription.js";
 import LabTest from "./LabTest.js";
+import Referral from "./Referral.js";
+import Invoice from "./Invoice.js";
+import Notification from "./Notification.js";
 import Medicine from "./Medicine.js";
-import PharmacyTransaction from "./PharmacyTransaction.js";
+import VerificationToken from "./VerificationToken.js";
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -24,6 +27,7 @@ User.hasOne(StaffProfile, {
 });
 StaffProfile.belongsTo(User, { foreignKey: "user_id", as: "account" });
 
+// Appointments: patient books with a doctor (doctor is a User with role="doctor")
 Patient.hasMany(Appointment, {
   foreignKey: "patient_id",
   as: "appointments",
@@ -38,6 +42,7 @@ User.hasMany(Appointment, {
 });
 Appointment.belongsTo(User, { foreignKey: "doctor_id", as: "doctor" });
 
+// Doctor availability: recurring weekly windows + one-off days off
 User.hasMany(DoctorAvailability, {
   foreignKey: "doctor_id",
   as: "availability",
@@ -52,6 +57,7 @@ User.hasMany(DoctorTimeOff, {
 });
 DoctorTimeOff.belongsTo(User, { foreignKey: "doctor_id", as: "doctor" });
 
+// Prescriptions: written by a doctor for a patient, optionally tied to a specific appointment
 Patient.hasMany(Prescription, {
   foreignKey: "patient_id",
   as: "prescriptions",
@@ -70,46 +76,79 @@ Appointment.hasOne(Prescription, {
   foreignKey: "appointment_id",
   as: "prescription",
 });
-Prescription.belongsTo(Appointment, {
-  foreignKey: "appointment_id",
-  as: "appointment",
-});
+Prescription.belongsTo(Appointment, { foreignKey: "appointment_id", as: "appointment" });
 
+// Lab tests: patient self-requests a test, a lab assistant (or admin) fulfills it
 Patient.hasMany(LabTest, {
   foreignKey: "patient_id",
-  as: "LabTests",
+  as: "labTests",
   onDelete: "CASCADE",
 });
 LabTest.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
 
 User.hasMany(LabTest, {
-  foreignKey: "doctor_id",
-  as: "labTestsRequested",
-  onDelete: "CASCADE",
+  foreignKey: "lab_assistant_id",
+  as: "labTestsHandled",
 });
-LabTest.belongsTo(User , {foreignKey: "doctor_id", as: "doctor"});
+LabTest.belongsTo(User, { foreignKey: "lab_assistant_id", as: "labAssistant" });
 
-// Pharmacy relationships
-Prescription.hasMany(PharmacyTransaction, {
-  foreignKey: "prescription_id",
-  as: "transactions",
-  onDelete: "CASCADE",
+// A doctor may also order a lab test on behalf of one of their patients
+User.hasMany(LabTest, {
+  foreignKey: "ordered_by_id",
+  as: "labTestsOrdered",
 });
-PharmacyTransaction.belongsTo(Prescription, { foreignKey: "prescription_id", as: "prescription" });
+LabTest.belongsTo(User, { foreignKey: "ordered_by_id", as: "orderedBy" });
 
-Patient.hasMany(PharmacyTransaction, {
+// Referrals: a doctor refers a patient to another doctor
+Patient.hasMany(Referral, {
   foreignKey: "patient_id",
-  as: "pharmacyTransactions",
+  as: "referrals",
   onDelete: "CASCADE",
 });
-PharmacyTransaction.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+Referral.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
 
-User.hasMany(PharmacyTransaction, {
-  foreignKey: "pharmacist_id",
-  as: "dispensedTransactions",
+User.hasMany(Referral, {
+  foreignKey: "referring_doctor_id",
+  as: "referralsSent",
+});
+Referral.belongsTo(User, { foreignKey: "referring_doctor_id", as: "referringDoctor" });
+
+User.hasMany(Referral, {
+  foreignKey: "referred_doctor_id",
+  as: "referralsReceived",
+});
+Referral.belongsTo(User, { foreignKey: "referred_doctor_id", as: "referredDoctor" });
+
+// Invoices: an admin bills a patient for services
+Patient.hasMany(Invoice, {
+  foreignKey: "patient_id",
+  as: "invoices",
   onDelete: "CASCADE",
 });
-PharmacyTransaction.belongsTo(User, { foreignKey: "pharmacist_id", as: "pharmacist" });
+Invoice.belongsTo(Patient, { foreignKey: "patient_id", as: "patient" });
+
+User.hasMany(Invoice, {
+  foreignKey: "created_by_id",
+  as: "invoicesCreated",
+});
+Invoice.belongsTo(User, { foreignKey: "created_by_id", as: "createdBy" });
+
+// Notifications: in-app inbox per user
+User.hasMany(Notification, {
+  foreignKey: "user_id",
+  as: "notifications",
+  onDelete: "CASCADE",
+});
+Notification.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
+// Verification / password-reset tokens: deleting the account must take its
+// outstanding tokens with it.
+User.hasMany(VerificationToken, {
+  foreignKey: "user_id",
+  as: "verificationTokens",
+  onDelete: "CASCADE",
+});
+VerificationToken.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
 export {
   sequelize,
@@ -121,6 +160,9 @@ export {
   DoctorTimeOff,
   Prescription,
   LabTest,
+  Referral,
+  Invoice,
+  Notification,
   Medicine,
-  PharmacyTransaction,
+  VerificationToken,
 };
