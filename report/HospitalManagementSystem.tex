@@ -112,7 +112,7 @@ Krish Ghimire (Roll no. 24)\\
 \vspace{1.0cm}
 {\large\bfseries Submitted to\par}
 \vspace{2pt}
-{\normalsize Dr. Rabindra Bista\\                                   % <-- VERIFY
+{\normalsize Mr. Suman Shrestha\\                                   % <-- VERIFY
 Department of Computer Science and Engineering\par}
 \vspace{1.6cm}
 {\normalsize \today\par}                                       % <-- VERIFY submission date
@@ -122,10 +122,13 @@ Department of Computer Science and Engineering\par}
 % BONA FIDE CERTIFICATE
 % ===========================================================================
 \pagenumbering{roman}
-\chapter*{Bona fide Certificate}
 \thispagestyle{plain}
-\vspace{0.5cm}
+
+% Vertically centre the whole certificate: equal \fill above and below.
+\vspace*{\fill}
+
 \begin{center}
+{\Large\bfseries Bona fide Certificate}\\[1.2cm]
 This project work on\\[4pt]
 {\bfseries ``Hospital Management System''}\\[4pt]
 is the bona fide work of\\[6pt]
@@ -133,13 +136,18 @@ is the bona fide work of\\[6pt]
 Krish Ghimire (Roll no. 24), Aarjan Adhikarii (Roll no. 3)}\\[6pt]
 who carried out the project work under my supervision.
 \end{center}
+
 \vspace{2.5cm}
+
 \noindent
 Project Supervisor\\[2pt]
 \rule{6cm}{0.4pt}\\
 Dr. Rabindra Bista\\                                              % <-- VERIFY supervisor
 Lecturer\\
 Department of Computer Science and Engineering
+
+\vspace*{\fill}
+\newpage
 
 % ===========================================================================
 % ACKNOWLEDGEMENTS
@@ -148,7 +156,6 @@ Department of Computer Science and Engineering
 \addcontentsline{toc}{chapter}{Acknowledgements}
 We express our sincere gratitude to all who contributed to the successful completion
 of this project.
-
 First, we would like to thank our project supervisor for their valuable guidance,
 continuous support, and constructive feedback throughout the development of this
 project. Their insights and encouragement played a crucial role in shaping both the
@@ -176,8 +183,8 @@ and development of a web-based \textbf{Hospital Management System (HMS)} that
 automates core clinical and administrative operations and connects the different
 people involved in patient care through a single platform. The system provides secure
 user authentication using \textbf{JSON Web Tokens (JWT)} with refresh-token rotation,
-and implements \textbf{role-based access control} across five distinct roles---patient,
-doctor, pharmacist, lab assistant, and administrator---so that each user interacts only
+and implements \textbf{role-based access control} across five distinct roles patient,
+doctor, pharmacist, lab assistant, and administrator so that each user interacts only
 with the features appropriate to them. Patients can register, book and manage
 appointments, view prescriptions and lab results, and settle bills; doctors manage
 their availability, consult patients, issue prescriptions, order lab tests, and refer
@@ -900,7 +907,7 @@ also provided.
 single-use, hash-stored reset link by email, and new accounts receive a verification
 link. Where a mail server is not configured, messages are logged to the server console,
 so the flows remain testable in development.
-\screenshot{Forgot-password page (screenshot to be added).}
+\rfig{pica/forgotpw.png}{Forgot-password page --- requests a single-use reset link}{fig:forgotpw}
 
 \paragraph{Role-Based Dashboards.} Each of the five roles has a distinct dashboard.
 The \emph{patient} dashboard shows appointments, prescriptions, lab tests, and billing;
@@ -915,7 +922,7 @@ queues and inventory.
 \paragraph{Appointment Management.} Patients book appointments against a doctor's
 declared availability, with conflict checking; appointments move through a
 pending/confirmed/cancelled/completed workflow.
-\screenshot{Appointment booking and management (screenshot to be added).}
+\rfig{pica/appointment.png}{Appointment booking and management}{fig:appointment}
 
 \paragraph{Prescriptions, Lab Tests, and Referrals.} Doctors issue prescriptions,
 order lab tests, and refer patients; lab assistants process test requests and record

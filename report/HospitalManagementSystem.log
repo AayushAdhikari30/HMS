@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.22)  23 JUL 2026 12:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.22)  27 JUL 2026 10:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -933,9 +933,7 @@ Package pdftex.def Info: pica/logo.png  used on input line 87.
 
 {C:/Users/Nitro/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/Nitr
 o/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./pica/logo.png>
-] [1
-
-]
+] [1]
 [2
 
 ] [3
@@ -997,13 +995,13 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.252 
+l.260 
        [1
 
 
 ]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
-63.
+71.
  (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [2{C:/Users/Nitro/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc
@@ -1013,123 +1011,134 @@ Chapter 2.
 
 ] [5] [6]
 Chapter 3.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-97.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 4
+05.
 (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [7
 
 ]
 [8] [9] [10]
-Overfull \hbox (4.95064pt too wide) in paragraph at lines 559--564
+Overfull \hbox (4.95064pt too wide) in paragraph at lines 567--572
 []\T1/lmr/bx/n/12 Controllers: \T1/lmtt/m/n/12 authController\T1/lmr/m/n/12 , \
 T1/lmtt/m/n/12 appointmentController\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 availabili
 tyController\T1/lmr/m/n/12 ,
  []
 
 
-Overfull \hbox (17.40451pt too wide) in paragraph at lines 559--564
+Overfull \hbox (17.40451pt too wide) in paragraph at lines 567--572
 \T1/lmtt/m/n/12 prescriptionController\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 labContr
 oller\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 referralController\T1/lmr/m/n/12 , \T1/lm
 tt/m/n/12 invoiceController\T1/lmr/m/n/12 ,
  []
 
 
-Overfull \hbox (36.20782pt too wide) in paragraph at lines 568--571
+Overfull \hbox (36.20782pt too wide) in paragraph at lines 576--579
 []\T1/lmr/bx/n/12 Services: \T1/lmtt/m/n/12 tokenService\T1/lmr/m/n/12 , \T1/lm
 tt/m/n/12 contactService\T1/lmr/m/n/12 , \T1/lmtt/m/n/12 notificationService\T1
 /lmr/m/n/12 , \T1/lmtt/m/n/12 availabilityService\T1/lmr/m/n/12 ,
  []
 
 
-Overfull \hbox (6.39288pt too wide) in paragraph at lines 573--578
+Overfull \hbox (6.39288pt too wide) in paragraph at lines 581--586
 \T1/lmr/m/n/12 point-ments, avail-abil-ity, pre-scrip-tions, lab tests, re-fer-
 rals, in-voices, no-ti-fi-ca-tions, medicines,
  []
 
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 587.
+(Font)              <5> on input line 595.
 [11] [12{C:/Users/Nitro/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mat
 hsy.enc}] [13]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 715.
+put line 723.
  [14] [15] [16] [17] [18] [19]
 Chapter 4.
-<pica/log.png, id=370, 1145.4795pt x 615.4995pt>
+<pica/log.png, id=373, 1145.4795pt x 615.4995pt>
 File: pica/log.png Graphic file (type png)
 <use pica/log.png>
-Package pdftex.def Info: pica/log.png  used on input line 898.
+Package pdftex.def Info: pica/log.png  used on input line 906.
 (pdftex.def)             Requested size: 407.66833pt x 219.05327pt.
+<pica/forgotpw.png, id=374, 364.36125pt x 296.307pt>
+File: pica/forgotpw.png Graphic file (type png)
+<use pica/forgotpw.png>
+Package pdftex.def Info: pica/forgotpw.png  used on input line 911.
+(pdftex.def)             Requested size: 407.66833pt x 331.53604pt.
 [20
 
  <./pica/log.png>]
-<pica/patient.png, id=377, 1141.866pt x 620.91975pt>
+<pica/patient.png, id=381, 1141.866pt x 620.91975pt>
 File: pica/patient.png Graphic file (type png)
 <use pica/patient.png>
-Package pdftex.def Info: pica/patient.png  used on input line 911.
+Package pdftex.def Info: pica/patient.png  used on input line 919.
 (pdftex.def)             Requested size: 407.66833pt x 221.68341pt.
-<pica/doctor.png, id=378, 1150.89975pt x 617.30624pt>
+<pica/doctor.png, id=382, 1150.89975pt x 617.30624pt>
 File: pica/doctor.png Graphic file (type png)
 <use pica/doctor.png>
-Package pdftex.def Info: pica/doctor.png  used on input line 912.
+Package pdftex.def Info: pica/doctor.png  used on input line 920.
 (pdftex.def)             Requested size: 407.66833pt x 218.66016pt.
-<pica/admin.png, id=379, 1139.457pt x 611.886pt>
+<pica/admin.png, id=383, 1139.457pt x 611.886pt>
 File: pica/admin.png Graphic file (type png)
 <use pica/admin.png>
-Package pdftex.def Info: pica/admin.png  used on input line 913.
+Package pdftex.def Info: pica/admin.png  used on input line 921.
 (pdftex.def)             Requested size: 407.66833pt x 218.91563pt.
+<pica/appointment.png, id=384, 1129.821pt x 615.4995pt>
+File: pica/appointment.png Graphic file (type png)
+<use pica/appointment.png>
+Package pdftex.def Info: pica/appointment.png  used on input line 926.
+(pdftex.def)             Requested size: 407.66833pt x 222.08679pt.
 
-Overfull \hbox (83.40025pt too wide) in paragraph at lines 915--918
+Overfull \hbox (83.40025pt too wide) in paragraph at lines 923--927
 \T1/lmr/m/n/12 avail-abil-ity, with con-flict check-ing; ap-point-ments move th
 rough a pend-ing/confirmed/cancelled/completed
  []
 
-[21 <./pica/patient.png>] [22 <./pica/doctor.png> <./pica/admin.png>]
-<pica/lab.png, id=394, 1141.26375pt x 591.4095pt>
+<pica/lab.png, id=385, 1141.26375pt x 591.4095pt>
 File: pica/lab.png Graphic file (type png)
 <use pica/lab.png>
-Package pdftex.def Info: pica/lab.png  used on input line 923.
+Package pdftex.def Info: pica/lab.png  used on input line 931.
 (pdftex.def)             Requested size: 407.66833pt x 211.25583pt.
-<pica/pharm.png, id=395, 1139.457pt x 593.8185pt>
+<pica/pharm.png, id=386, 1139.457pt x 593.8185pt>
 File: pica/pharm.png Graphic file (type png)
 <use pica/pharm.png>
-Package pdftex.def Info: pica/pharm.png  used on input line 928.
+Package pdftex.def Info: pica/pharm.png  used on input line 936.
 (pdftex.def)             Requested size: 407.66833pt x 212.4516pt.
- [23 <./pica/lab.png>] [24 <./pica/pharm.png>] [25]
+[21 <./pica/forgotpw.png>] [22 <./pica/patient.png> <./pica/doctor.png>]
+[23 <./pica/admin.png> <./pica/appointment.png>] [24 <./pica/lab.png> <./pica/p
+harm.png>] [25] [26]
 Chapter 5.
-[26
+[27
 
-] [27] [28
+] [28] [29
 
 ]
 (C:\Users\Nitro\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1069.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1077.
 
-[29
+[30
 
 ]
-Overfull \hbox (0.57301pt too wide) in paragraph at lines 1134--1136
+Overfull \hbox (0.57301pt too wide) in paragraph at lines 1142--1144
 \T1/lmr/m/n/12 Example en-vi-ron-ment vari-ables (\T1/lmtt/m/n/12 .env\T1/lmr/m
 /n/12 ) stor-ing sen-si-tive con-fig-u-ra-tion such as the database
  []
 
-[30] [31] (HospitalManagementSystem.aux)
+[31] [32] (HospitalManagementSystem.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `HospitalManagementSystem.out' has not change
 d.
-(rerunfilecheck)             Checksum: 5AF89E1E5ABC699B51D3432C90D7F2C5;6115.
+(rerunfilecheck)             Checksum: 4DF2EC4C737F88374475FA116C488648;6115.
  ) 
 Here is how much of TeX's memory you used:
- 27882 strings out of 467871
- 532307 string characters out of 5418376
- 1318578 words of memory out of 5000000
- 56129 multiletter control sequences out of 15000+600000
+ 27898 strings out of 467871
+ 532663 string characters out of 5418376
+ 1317847 words of memory out of 5000000
+ 56143 multiletter control sequences out of 15000+600000
  693969 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,11n,94p,428b,2010s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1144,9 +1153,9 @@ Users/Nitro/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/U
 sers/Nitro/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/U
 sers/Nitro/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/U
 sers/Nitro/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
-Output written on HospitalManagementSystem.pdf (39 pages, 2674436 bytes).
+Output written on HospitalManagementSystem.pdf (40 pages, 2842889 bytes).
 PDF statistics:
- 611 PDF objects out of 1000 (max. 8388607)
- 183 named destinations out of 1000 (max. 500000)
- 352 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 622 PDF objects out of 1000 (max. 8388607)
+ 185 named destinations out of 1000 (max. 500000)
+ 362 words of extra memory for PDF output out of 10000 (max. 10000000)
 

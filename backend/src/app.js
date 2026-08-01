@@ -16,6 +16,11 @@ import medicineRoutes from "./routes/medicines.js";
 
 const app = express();
 
+// Behind a reverse proxy (nginx/Docker), use the client's real IP from
+// X-Forwarded-For so per-user rate limiting works instead of lumping everyone
+// under the proxy's single address. '1' trusts exactly one proxy hop.
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
