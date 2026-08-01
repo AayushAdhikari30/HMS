@@ -12,12 +12,26 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Endpoints where a 401 is a normal, user-facing response (wrong password, etc.)
+// — not a sign that a session expired, so they must never trigger the
+// refresh-then-redirect flow below.
+const AUTH_ENDPOINTS = [
+  "/login",
+  "/register",
+  "/refresh",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+  "/resend-verification",
+];
+
 // If access token expires, auto-refresh and retry
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
+    const isAuthEndpoint = AUTH_ENDPOINTS.some((path) => original?.url?.includes(path));
+    if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
       original._retry = true;
       try {
         const { data } = await axios.post(
