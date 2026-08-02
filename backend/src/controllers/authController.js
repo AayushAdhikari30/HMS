@@ -23,7 +23,7 @@ import {
 const cookieOpts = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "strict", 
+  sameSite: "lax",
   maxAge: JWT.COOKIE_MAX_AGE_MS,
 };
 

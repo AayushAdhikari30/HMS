@@ -385,7 +385,7 @@ const MedicationMiniTable = ({ medications }) => (
           {["Medicine", "Dosage", "Frequency", "Duration", "Instructions"].map((h) => (
             <th
               key={h}
-              className="text-left text-[10px] font-bold uppercase tracking-widest text-[#666] px-3 py-2 bg-white/[0.02] border-b border-[#1a1a1a]"
+              className="text-left text-[10px] font-bold uppercase tracking-widest text-[#666] px-3 py-2 bg-white/2 border-b border-[#1a1a1a]"
             >
               {h}
             </th>
@@ -484,7 +484,7 @@ const PatientHistory = ({ prescriptions, labTests, referrals }) => (
 
 const PatientRow = ({ patient, mode, busy, onSetMode, onSavePrescription, onSaveLabTest, onSaveReferral, prescriptions, labTests, referrals, doctors }) => (
   <>
-    <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
+    <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/2 transition-colors duration-100">
       <td className="px-5 py-3.5 text-sm align-middle">
         <span className="font-medium text-[#ddd]">{patient.name}</span>
       </td>
@@ -591,6 +591,7 @@ const DoctorPatients = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAll();
   }, [fetchAll]);
 
@@ -720,7 +721,7 @@ const DoctorPatients = () => {
               {["Patient", "Phone", "Last Visit", "Status", "Prescriptions", "Action"].map((h) => (
                 <th
                   key={h}
-                  className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/[0.02] border-b border-[#1a1a1a]"
+                  className="text-left text-[11px] font-bold uppercase tracking-widest text-[#666] px-5 py-3.5 bg-white/2 border-b border-[#1a1a1a]"
                 >
                   {h}
                 </th>

@@ -38,12 +38,6 @@ const CHECKUP_DATA = [
   { id: 4, date: "Apr 30, 2026", doctor: "Dr. Puja Shrestha", department: "Dermatology", status: "Cancelled" },
 ];
 
-const Placeholder = ({ label }) => (
-  <div className="bg-[#111111] border border-dashed border-[#2a2a2a] rounded-xl py-16 px-8 text-center text-sm text-[#555]">
-    {label} · Coming Soon
-  </div>
-);
-
 const PatientOverview = () => {
   const [selectedCheckup, setSelectedCheckup] = useState(null);
 

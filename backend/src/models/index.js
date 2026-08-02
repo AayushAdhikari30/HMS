@@ -12,6 +12,8 @@ import Invoice from "./Invoice.js";
 import Notification from "./Notification.js";
 import Medicine from "./Medicine.js";
 import VerificationToken from "./VerificationToken.js";
+import Room from "./Room.js";
+
 
 User.hasOne(Patient, {
   foreignKey: "user_id",
@@ -165,4 +167,5 @@ export {
   Notification,
   Medicine,
   VerificationToken,
+  Room,
 };

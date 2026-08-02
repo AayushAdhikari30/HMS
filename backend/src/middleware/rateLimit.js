@@ -8,7 +8,6 @@ import { HTTP } from "../constants.js";
 
 const buckets = new Map();
 
-// Stale buckets would otherwise accumulate one entry per IP forever.
 const SWEEP_INTERVAL_MS = 10 * 60 * 1000;
 const sweep = setInterval(() => {
   const now = Date.now();
@@ -18,8 +17,8 @@ const sweep = setInterval(() => {
 }, SWEEP_INTERVAL_MS);
 sweep.unref();
 
-export const rateLimit = ({ windowMs, max, keyPrefix = "" }) => (req, res, next) => {
-  const key = `${keyPrefix}:${req.ip}`;
+export const rateLimit = ({ windowMs, max, keyPrefix = "", keyFn }) => (req, res, next) => {
+  const key = `${keyPrefix}:${keyFn ? keyFn(req) : req.ip}`;
   const now = Date.now();
   const entry = buckets.get(key);
 

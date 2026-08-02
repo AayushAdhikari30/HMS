@@ -3,9 +3,6 @@ import path from "path";
 import crypto from "crypto";
 import multer from "multer";
 
-// Files land under UPLOAD_ROOT/labs/. In Docker this directory is a mounted
-// volume (see docker-compose.yml) so images survive container rebuilds —
-// without that mount they'd vanish the moment the image is rebuilt.
 const UPLOAD_ROOT = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
 const LAB_IMAGE_DIR = path.join(UPLOAD_ROOT, "labs");
 fs.mkdirSync(LAB_IMAGE_DIR, { recursive: true });
@@ -32,9 +29,6 @@ const multerUpload = multer({
   },
 }).single("image");
 
-// multer reports its own errors (oversized file, wrong type) by calling
-// next(err) — left unhandled, those fall through to the generic 500 handler
-// instead of a clear 400. This wrapper turns them into a proper response.
 export const uploadLabImage = (req, res, next) => {
   multerUpload(req, res, (err) => {
     if (err) {

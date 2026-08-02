@@ -1,4 +1,6 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect, useCallback } from "react";
+import api from "../../api/axios";
 
 const inputClass = `
   w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-4 py-2.5
@@ -14,15 +16,6 @@ const STATUS_STYLES = {
   Occupied: "bg-red-500/10 text-red-400",
   Maintenance: "bg-amber-500/10 text-amber-400",
 };
-
-// Mock data : replace with GET /rooms once the backend model exists
-const INITIAL_ROOMS = [
-  { id: "r1", number: "101", type: "General Ward", capacity: 4, status: "Available" },
-  { id: "r2", number: "204", type: "ICU", capacity: 1, status: "Occupied" },
-  { id: "r3", number: "305", type: "Private", capacity: 1, status: "Available" },
-  { id: "r4", number: "OT-1", type: "Operation Theater", capacity: 1, status: "Maintenance" },
-];
-
 const StatusPill = ({ status }) => (
   <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide ${STATUS_STYLES[status] ?? "bg-white/5 text-[#888]"}`}>
     {status}
@@ -85,34 +78,70 @@ const AddRoomForm = ({ onAdd }) => {
 };
 
 const RoomManagement = () => {
-  const [rooms, setRooms] = useState(INITIAL_ROOMS);
+  const [rooms, setRooms] = useState([]);
+  const [loading,setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
 
-  const cycleStatus = (id) => {
-    const order = ["Available", "Occupied", "Maintenance"];
-    setRooms((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: order[(order.indexOf(r.status) + 1) % order.length] } : r)),
-    );
+  const fetchRooms = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/rooms");
+      if (res.data?.success) setRooms(res.data.rooms);
+    } catch (err) {
+      console.warn("[RoomManagement] fetch failed:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchRooms(); }, [fetchRooms]);
+
+  const addRoom = async (room) => {
+    try {
+      const res = await api.post("/rooms", room);
+      if (res.data?.success) setRooms((prev) => [res.data.room, ...prev]);
+    } catch (err) {
+      console.error("[RoomManagement] create failed:", err.message);
+    }
   };
 
-  const removeRoom = (id) => setRooms((prev) => prev.filter((r) => r.id !== id));
 
+  const cycleStatus = async (room) => {
+    const order = ["Available", "Occupied", "Maintenance"];
+    const next = order[(order.indexOf(room.status) + 1) % order.length];
+    setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, status: next } : r)));
+    try {
+      await api.patch(`/rooms/${room.id}/status`, { status: next });
+    } catch (err) {
+      console.error("[RoomManagement] status update failed:", err.message);
+      fetchRooms();
+    }
+  };
+
+  const removeRoom = async (id) => {
+    setRooms((prev) => prev.filter((r) => r.id !== id));
+    try {
+      await api.delete(`/rooms/${id}`);
+    } catch (err) {
+      console.error("[RoomManagement] delete failed:", err.message);
+      fetchRooms();
+    }
+  };
   const filtered = filter === "All" ? rooms : rooms.filter((r) => r.status === filter);
 
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-base font-semibold text-white tracking-tight">Room Management</h2>
 
-      <AddRoomForm onAdd={(room) => setRooms((prev) => [room, ...prev])} />
+      <AddRoomForm onAdd={(addRoom)} />
 
       <div className="flex gap-2 flex-wrap">
         {["All", "Available", "Occupied", "Maintenance"].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-3.5 py-1.5 rounded-full border text-xs font-medium transition-colors duration-150 cursor-pointer ${
-              filter === f ? "bg-green-500 border-green-500 text-black" : "border-[#2a2a2a] text-[#888] hover:border-green-500/40 hover:text-green-500"
-            }`}
+            className={`px-3.5 py-1.5 rounded-full border text-xs font-medium transition-colors duration-150 cursor-pointer ${filter === f ? "bg-green-500 border-green-500 text-black" : "border-[#2a2a2a] text-[#888] hover:border-green-500/40 hover:text-green-500"
+              }`}
           >
             {f}
           </button>
@@ -143,7 +172,7 @@ const RoomManagement = () => {
                 <td className="px-5 py-3.5 align-middle">
                   <div className="flex gap-2">
                     <button
-                      onClick={() => cycleStatus(room.id)}
+                      onClick={() => cycleStatus(room)}
                       className="border border-blue-500/40 text-blue-400 rounded-md px-2.5 py-1 text-xs font-semibold hover:bg-blue-500 hover:text-black transition-colors duration-150 cursor-pointer whitespace-nowrap"
                     >
                       Cycle Status

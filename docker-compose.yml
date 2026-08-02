@@ -28,6 +28,7 @@ services:
       # NOTE: 'development' keeps auth cookies working over plain HTTP on a LAN
       # (in 'production' the cookie is marked Secure and needs HTTPS).
       NODE_ENV: development
+      HOST: 0.0.0.0
       PORT: 8000
       DB_HOST: db
       DB_PORT: 3306

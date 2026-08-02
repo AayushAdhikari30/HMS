@@ -14,18 +14,28 @@ import referralRoutes from "./routes/referrals.js";
 import invoiceRoutes from "./routes/invoices.js";
 import notificationRoutes from "./routes/notifications.js";
 import medicineRoutes from "./routes/medicines.js";
+import uploadsRoutes from "./routes/uploads.js";
 import profileRoutes from "./routes/profile.js";
+import roomRoutes from "./routes/room.js";
 
 const app = express();
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-// Behind a reverse proxy (nginx/Docker), use the client's real IP from
-// X-Forwarded-For so per-user rate limiting works instead of lumping everyone
-// under the proxy's single address. '1' trusts exactly one proxy hop.
 app.set("trust proxy", 1);
+app.disable("x-powered-by");
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
     credentials: true,
   }),
 );
@@ -33,10 +43,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-// Uploaded lab-result images. In Docker this directory is a mounted volume
-// (see docker-compose.yml) so files survive container rebuilds.
-app.use("/uploads", express.static(process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads")));
+app.use("/uploads", uploadsRoutes);
 
 // Routes
 app.use("/api/v1/hms", authRoutes);
@@ -51,7 +58,7 @@ app.use("/api/v1/hms/invoices", invoiceRoutes);
 app.use("/api/v1/hms/notifications", notificationRoutes);
 app.use("/api/v1/hms/medicines", medicineRoutes);
 app.use("/api/v1/hms/profile", profileRoutes);
-
+app.use("/api/v1/hms/rooms",roomRoutes)
 app.get("/health", (_, res) => res.json({ status: "ok" }));
 
 app.use((req, res) => res.status(404).json({ message: `Route ${req.path} not found` }));
