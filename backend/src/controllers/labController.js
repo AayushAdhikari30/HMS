@@ -4,8 +4,7 @@ import { ROLES, HTTP, LAB_TEST_STATUS, LAB_TEST_STATUS_LIST, NOTIFICATION_TYPE }
 
 const getPatientForUser = (userId) => Patient.findOne({ where: { user_id: userId } });
 
-// Served through nginx's /uploads/ proxy, same origin as everything else —
-// see the note in profileController/notificationService about relative URLs.
+
 const serializeLabTest = (test) => ({
   id: test.id,
   testName: test.test_name,

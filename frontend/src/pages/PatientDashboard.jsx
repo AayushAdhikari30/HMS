@@ -38,8 +38,6 @@ const longDate = (iso) =>
     ? new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })
     : "—";
 
-// Pulls the three overview stats and the recent-checkups table from the
-// patient's actual appointments/prescriptions/labs — nothing here is fixed data.
 const useOverviewData = () => {
   const [appointments, setAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
@@ -65,6 +63,7 @@ const useOverviewData = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAll();
   }, [fetchAll]);
 
@@ -172,7 +171,6 @@ const PatientOverview = () => {
   );
 };
 
-// --- PatientDashboard Router ---
 export default function PatientDashboard() {
   return (
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Patient Dashboard">

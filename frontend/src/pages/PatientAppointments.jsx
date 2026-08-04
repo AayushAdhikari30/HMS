@@ -48,7 +48,6 @@ const StatusPill = ({ status }) => (
   </span>
 );
 
-// --- Booking panel ---
 const BookAppointmentPanel = ({ onBooked }) => {
   const [doctors, setDoctors] = useState([]);
   const [doctorId, setDoctorId] = useState("");
@@ -91,6 +90,7 @@ const BookAppointmentPanel = ({ onBooked }) => {
   }, [doctorId, date]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSlots();
   }, [fetchSlots]);
 
@@ -230,8 +230,7 @@ const BookAppointmentPanel = ({ onBooked }) => {
   );
 };
 
-// --- Appointment row ---
-const AppointmentRow = ({ appt, onCancel, cancelling }) => (
+  const AppointmentRow = ({ appt, onCancel, cancelling }) => (
   <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02] transition-colors duration-100">
     <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{formatDate(appt.appointmentDate)}</td>
     <td className="px-5 py-3.5 text-sm text-[#ccc] align-middle">{formatTime(appt.startTime?.slice(0, 5))}</td>
@@ -258,7 +257,6 @@ const AppointmentRow = ({ appt, onCancel, cancelling }) => (
   </tr>
 );
 
-// --- Main page ---
 const PatientAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -277,6 +275,7 @@ const PatientAppointments = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAppointments();
   }, [fetchAppointments]);
 

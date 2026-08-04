@@ -4,7 +4,7 @@ import {
   listLabTests,
   collectSample,
   submitResult,
-} from "../controllers/labTestController.js";
+} from "../controllers/LabTestController.js";
 import { authenticate, authorise } from "../middleware/auth.js";
 import { ROLES } from "../constants.js";
 

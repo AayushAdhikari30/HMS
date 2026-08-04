@@ -31,7 +31,7 @@ const serializeAppointment = (appt) => ({
   createdAt: appt.createdAt,
 });
 
-// GET /appointments/doctors — any authenticated user can browse doctors to book with
+// GET /appointments/doctors , any authenticated user can browse doctors to book with
 export const listDoctors = async (req, res) => {
   try {
     const { department } = req.query;

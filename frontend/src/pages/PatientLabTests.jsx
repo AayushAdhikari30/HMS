@@ -183,6 +183,7 @@ const PatientLabTests = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTests();
   }, [fetchTests]);
 

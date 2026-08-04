@@ -41,7 +41,6 @@ const isToday = (iso) => {
   );
 };
 
-// ---------- Result submission modal ----------
 const ResultModal = ({ test, onClose, onSubmit }) => {
   const [result, setResult] = useState(test.result || "");
   const [notes, setNotes] = useState(test.notes || "");
@@ -116,7 +115,6 @@ const ResultModal = ({ test, onClose, onSubmit }) => {
   );
 };
 
-// ---------- Shared row ----------
 const TestRow = ({ test, onStart, onReport, showActions = true }) => (
   <tr className="border-b border-[#1a1a1a] last:border-none hover:bg-white/[0.02]">
     <td className="px-5 py-3.5 text-sm font-medium text-[#ddd] align-middle">{test.testName}</td>
@@ -155,7 +153,6 @@ const TestRow = ({ test, onStart, onReport, showActions = true }) => (
   </tr>
 );
 
-// ---------- Data hook (shared across overview / queue / completed) ----------
 const useLabTests = () => {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -186,8 +183,6 @@ const useLabTests = () => {
   const uploadImage = async (id, file) => {
     const form = new FormData();
     form.append("image", file);
-    // No Content-Type header here on purpose — the browser sets it (with the
-    // multipart boundary) automatically when the body is a FormData object.
     const res = await api.post(`/labs/${id}/image`, form);
     if (res.data?.success) {
       setTests((prev) => prev.map((t) => (t.id === id ? { ...t, imageUrl: res.data.imageUrl } : t)));
@@ -198,7 +193,6 @@ const useLabTests = () => {
   return { tests, loading, refetch: fetchTests, updateStatus, uploadImage };
 };
 
-// ---------- Pages ----------
 const LabOverview = () => {
   const navigate = useNavigate();
   const { tests, loading } = useLabTests();
@@ -359,7 +353,6 @@ const LabQueue = () => {
   );
 };
 
-// ---------- Result image upload ----------
 const ImageUpload = ({ test, onUpload }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -415,8 +408,6 @@ const LabCompleted = () => {
     [tests],
   );
 
-  // Derived from `tests`, not a separate snapshot, so an image upload (which
-  // updates `tests`) is reflected here immediately without a second sync.
   const selected = selectedId ? tests.find((t) => t.id === selectedId) : null;
 
   return (
@@ -510,7 +501,6 @@ const LabCompleted = () => {
   );
 };
 
-// --- Router ---
 export default function LabAssistantDashboard() {
   return (
     <DashboardLayout navItems={NAV_ITEMS} pageTitle="Lab Portal">

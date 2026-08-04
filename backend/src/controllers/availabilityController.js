@@ -39,7 +39,6 @@ export const setAvailability = async (req, res) => {
   }
 };
 
-// GET /doctors/availability — doctor's own recurring windows
 export const listMyAvailability = async (req, res) => {
   try {
     const availability = await DoctorAvailability.findAll({

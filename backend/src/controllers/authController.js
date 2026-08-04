@@ -35,9 +35,7 @@ const buildUserPayload = (user, profile = null) => ({
   emailVerified: Boolean(user.email_verified_at),
 });
 
-// Every "did you forget your password" response looks identical whether or not
-// the account exists — otherwise this endpoint becomes a way to enumerate which
-// patients are registered at the hospital.
+
 const GENERIC_RESET_RESPONSE = {
   success: true,
   message: "If that account exists, a reset link is on its way.",
@@ -130,7 +128,6 @@ export const login = async (req, res) => {
       return res.status(HTTP.UNAUTHORIZED).json({ message: "Invalid credentials" });
     }
 
-    // FIX: model field is `password_hash`, not `password`
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
     if (!passwordMatch) {
       return res.status(HTTP.UNAUTHORIZED).json({ message: "Invalid credentials" });
@@ -217,8 +214,7 @@ export const forgotPassword = async (req, res) => {
 
     const user = await findUserByLoginEmail(identifier);
 
-    // Inactive accounts and staff with no address on file fall through to the
-    // same generic reply rather than leaking why nothing arrived.
+
     if (user?.is_active) {
       const contact = await getContactForUser(user);
       if (contact?.email) {
